@@ -1,0 +1,23 @@
+plugins:
+  post_approval_finish_enabled:
+    default: true
+
+  post_approval_finish_from_category:
+    type: category
+    default: 0
+
+  post_approval_finish_group:
+    default: "Community_Sage"
+
+  post_approval_finish_badge:
+    default: -1
+
+  post_approval_finish_topic_template:
+    default: "Hey %USER%, we have reviewed your topic and have approved it for the %CATEGORYNAME% category.\n\nYour topic has been cloned into the category. You can find the new topic here:\n%TOPICLINK%\n\nThank you for your contribution to the Developer Forum, we really appreciate it!"
+  post_approval_finish_topic_template_alt:
+    default: "Hey %USER%, your topic seems most appropriate for the %CATEGORYNAME% category, which you do not need to use post approval for, since you can create topics there directly.\n\nHowever, to save you some work having to repost it, we have moved it to %CATEGORYNAME% for you. You can find the topic here:\n%TOPICLINK%\n\nThanks and let us know if you have any questions!"
+
+  post_approval_finish_reply_template:
+    default: "" # TODO
+  post_approval_finish_reply_template_alt:
+    default: "" # TODO
