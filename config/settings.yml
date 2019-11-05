@@ -10,14 +10,19 @@ plugins:
     default: "Community_Sage"
 
   post_approval_finish_badge:
-    default: 0
+    default: -1
 
-  post_approval_finish_topic_template:
-    default: "Hey %USER%, we have reviewed your topic and have approved it for the %CATEGORYNAME% category.\n\nYour topic has been cloned into the category. You can find the new topic here:\n%TOPICLINK%\n\nThank you for your contribution to the Developer Forum, we really appreciate it!"
-  post_approval_finish_topic_template_unnecessary:
-    default: "Hey %USER%, your topic seems most appropriate for the %CATEGORYNAME% category, which you do not need to use post approval for, since you can create topics there directly.\n\nHowever, to save you some work having to repost it, we have moved it to %CATEGORYNAME% for you. You can find the topic here:\n%TOPICLINK%\n\nThanks and let us know if you have any questions!"
+  post_approval_finish_text_topic:
+    default: "Thanks for your contribution. Your topic has been approved and moved to the %CATEGORY% category:\n%POST%"
 
-  post_approval_finish_reply_template:
-    default: "" # TODO
-  post_approval_finish_reply_template_unnecessary:
-    default: "" # TODO
+  post_approval_finish_text_reply:
+    default: "Thanks for your contribution. Your post has been approved as a reply to an existing topic:\n%POST%"
+
+  post_approval_finish_text_badge:
+    default: "Since you blazed through post approval for this post, we also awarded you the %BADGE% badge for this post! Well done!"
+
+  post_approval_finish_text_topic_footer:
+    default: "PS: You don't have to go through post approval for the %CATEGORY% category, so feel free to post there directly on your own next time!"
+
+  post_approval_finish_text_reply_footer:
+    default: "PS: You don't have to go through post approval for this topic, since you already have reply permissions to it / its category, so feel free to reply to it on your own next time!"
