@@ -118,8 +118,7 @@ after_initialize do
       return unless SiteSetting.post_approval_finish_badge > 0 # not enabled
       return unless badge = Badge.find_by(id: SiteSetting.post_approval_finish_badge, enabled: true) # no badge found
 
-      # TODO award badge here
-
+      BadgeGranter.grant(badge, post.user, post_id: post.id)
     end
 
     # Whether post could have been posted without post approval
