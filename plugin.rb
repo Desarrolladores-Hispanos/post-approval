@@ -56,7 +56,7 @@ after_initialize do
           tags: tags,
           custom_fields: {
             post_approval_finished: true # Make sure it triggers notifications
-          }
+          },
           skip_validations: true, # They've already gone through the validations to make the topic first
         )
 
@@ -66,7 +66,7 @@ after_initialize do
       elsif (params[:target_topic_id] != nil)
 
         # Validate target existing topic for new reply
-        target_topic = Topic.find_by(id: params[:target_topic_id], Archetype.default)
+        target_topic = Topic.find_by(id: params[:target_topic_id], archetype: Archetype.default)
         raise Discourse::InvalidParameters.new(:target_topic_id) unless target_topic
 
         # TODO: need to validate that current_user can reply to this topic
@@ -79,7 +79,7 @@ after_initialize do
           user: pm_topic.user,
           custom_fields: {
             post_approval_finished: true # Make sure it triggers notifications
-          }
+          },
           skip_validations: true, # They've already gone through the validations to make the reply first
         )
 

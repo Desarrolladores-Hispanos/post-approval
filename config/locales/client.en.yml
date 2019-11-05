@@ -1,10 +1,17 @@
 en:
-  site_settings:
-    post_approval_finish_enabled: "Enable the post approval completion button"
-    post_approval_finish_from_category: "Category that post approval requests are in"
-    post_approval_finish_group: "Group that can finish post approval requests"
-    post_approval_finish_badge: "Badge to award for passing post approval"
-    post_approval_finish_topic_template: "Message for topic approval requests"
-    post_approval_finish_topic_template_alt: "Message for unnecessary topic approval requests"
-    post_approval_finish_reply_template: "Message for reply approval requests"
-    post_approval_finish_reply_template_alt: "Message for unnecessary reply approval requests"
+  js:
+    topic:
+      post_approval:
+        title: "Approve Post"
+        help: "Complete post approval procedure on this post"
+  admin_js:
+    admin:
+      site_settings:
+        post_approval_finish_enabled: "Enable the post approval completion button"
+        post_approval_finish_from_category: "Category that post approval requests are in"
+        post_approval_finish_group: "Group that can finish post approval requests"
+        post_approval_finish_badge: "Badge to award for passing post approval"
+        post_approval_finish_topic_template: "Message for topic approval requests"
+        post_approval_finish_topic_template_alt: "Message for unnecessary topic approval requests"
+        post_approval_finish_reply_template: "Message for reply approval requests"
+        post_approval_finish_reply_template_alt: "Message for unnecessary reply approval requests"
