@@ -60,10 +60,10 @@ RSpec.describe "Post Approval Finish" do
     end
 
     before do
-      SiteSetting.post_approval_finish_enabled = true
-      SiteSetting.post_approval_finish_group = "Gatekeepers"
-      SiteSetting.post_approval_finish_from_category = category.id
-      SiteSetting.post_approval_finish_topic_template = "great post:%USER%/%CATEGORYNAME%/%TOPICLINK%"
+      SiteSetting.post_approval_enabled = true
+      SiteSetting.post_approval_group = "Gatekeepers"
+      SiteSetting.post_approval_from_category = category.id
+      SiteSetting.post_approval_topic_template = "great post:%USER%/%CATEGORYNAME%/%TOPICLINK%"
     end
 
     context "while logged in as a sage" do
@@ -81,7 +81,7 @@ RSpec.describe "Post Approval Finish" do
           post_action_type_id: PostActionType.types[:like],
         ).count).to eq(2)
 
-        post "/post-approval-finish.json", params: {
+        post "/post-approval", params: {
           bb_topic_id: pa[:bb_topic].id,
           pm_topic_id: pa[:pm_topic].id,
           category_id: open_category.id,
@@ -122,7 +122,7 @@ RSpec.describe "Post Approval Finish" do
       it "should deny" do
         pa = create_pa()
 
-        post "/post-approval-finish.json", params: {
+        post "/post-approval", params: {
           bb_topic_id: pa[:bb_topic].id,
           pm_topic_id: pa[:pm_topic].id,
           category_id: open_category.id,
