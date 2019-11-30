@@ -1,0 +1,20 @@
+en:
+  site_settings:
+    post_approval_enabled: "Enable Post Approval procedure"
+
+    post_approval_badge: "Badge to award as part of Post Approval"
+
+    post_approval_redirect_enabled: "Enable Post Approval redirection"
+    post_approval_redirect_tl_max: "Max trust level that Post Approval redirection applies to"
+    post_approval_redirect_group: "Group to send Post Approval messages to"
+    post_approval_redirect_topic_prefix: "Prefix for messages to Post Approval for topics"
+    post_approval_redirect_reply_prefix: "Prefix for messages to Post Approval for replies"
+
+    post_approval_button_enabled: "Enable button to finish Post Approval requests"
+    post_approval_button_group: "Group that can use button to finish Post Approval requests"
+    
+    post_approval_response_topic: "Message for topics approved through Post Approval"
+    post_approval_response_reply: "Message for replies approved through Post Approval"
+    post_approval_response_badge: "Message to indicate user received Post Approval badge for this request"
+    post_approval_response_topic_footer: "Message to tell user they could post topic without Post Approval"
+    post_approval_response_reply_footer: "Message to tell user they could post reply without Post Approval"
