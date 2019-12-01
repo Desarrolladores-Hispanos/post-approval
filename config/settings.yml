@@ -1,12 +1,14 @@
 plugins:
   post_approval_enabled:
     default: true
+    client: true
 
   post_approval_badge:
     default: 0
 
   post_approval_redirect_enabled:
     default: true
+    client: true
   post_approval_redirect_tl_max:
     default: 1
   post_approval_redirect_group:
@@ -18,8 +20,10 @@ plugins:
 
   post_approval_button_enabled:
     default: true
+    client: true
   post_approval_button_group:
     default: "Community_Sage"
+    client: true
 
   post_approval_response_topic:
     default: "Thanks for your contribution! Your topic has been **approved** for **%CATEGORY%** here:\n%POST%"
