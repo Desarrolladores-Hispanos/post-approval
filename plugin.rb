@@ -67,7 +67,7 @@ after_initialize do
       return SiteSetting.post_approval_enabled &&
         SiteSetting.post_approval_redirect_enabled &&
         SiteSetting.post_approval_redirect_group.present? &&
-        !(topic.custom_fields["post_approval"]) && # TODO: test+fix this, custom marker to fall-through
+        !(topic.custom_fields["post_approval"]) && # suppress notifications unless post was already approved
         topic.user&.trust_level <= SiteSetting.post_approval_redirect_tl_max &&
         topic.category&.pa_redirect_topic_enabled
     end
@@ -205,7 +205,7 @@ after_initialize do
           user: pm_topic.user,
           tags: tags,
           custom_fields: {
-            post_approval: true # TODO: does this work? Make sure it triggers notifications
+            post_approval: true # marker to let ourselves know not to suppress notifications
           },
           skip_validations: true, # They've already gone through the validations to make the topic first
         )
