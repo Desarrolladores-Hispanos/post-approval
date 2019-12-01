@@ -4,6 +4,15 @@ en:
       button:
         title: "Approve Post"
         help: "Complete Post Approval procedure on this post"
+      settings:
+        title: "Post Approval"
+        redirect:
+          topic:
+            enabled: "Redirect new topics by low trust levels to post approval?"
+            message: "Message to send along when redirecting new topics"
+          reply:
+            enabled: "Redirect replies by low trust levels to post approval?"
+            message: "Message to send along when redirecting new topics"
       modal:
         badge:
           title: "Award Post Approval badge for this post"
@@ -19,10 +28,3 @@ en:
           instructions: "Please choose the topic you'd like to move this request to as a reply."
           title: "Approve as Reply To Topic"
           radio_label: "As Reply To Topic"
-      redirect:
-        topic:
-          enabled: "Redirect new topics by low trust levels to post approval?"
-          message: "Message to send along when redirecting new topics"
-        reply:
-          enabled: "Redirect replies by low trust levels to post approval?"
-          message: "Message to send along when redirecting new topics"

@@ -1,27 +1,36 @@
-<section class='field'>
-  <label>
-    {{input type="checkbox" checked=category.custom_fields.pa_redirect_topic_enabled}}
-    {{i18n 'post_approval.redirect.topic.enabled'}}
-  </label>
-</section>
+{{#if siteSettings.post_approval_enabled }}
+  {{#if siteSettings.post_approval_redirect_enabled }}
+    <section>
+      <h3> {{i18n "post_approval.settings.title"}}</h3>
 
-<section class='field'>
-  <label>
-    {{i18n 'post_approval.redirect.topic.message'}}
-  </label>
-  {{d-editor value=category.custom_fields.pa_redirect_topic_message}}
-</section>
+      <section class='field'>
+        <label>
+          {{input type="checkbox" checked=category.custom_fields.pa_redirect_topic_enabled}}
+          {{i18n 'post_approval.settings.redirect.topic.enabled'}}
+        </label>
+      </section>
 
-<section class='field'>
-  <label>
-    {{input type="checkbox" checked=category.custom_fields.pa_redirect_reply_enabled}}
-    {{i18n 'post_approval.redirect.reply.enabled'}}
-  </label>
-</section>
+      <section class='field'>
+        <label>
+          {{input type="checkbox" checked=category.custom_fields.pa_redirect_reply_enabled}}
+          {{i18n 'post_approval.settings.redirect.reply.enabled'}}
+        </label>
+      </section>
 
-<section class='field'>
-  <label>
-    {{i18n 'post_approval.redirect.reply.message'}}
-  </label>
-  {{d-editor value=category.custom_fields.pa_redirect_reply_message}}
-</section>
+      <section class='field'>
+        <label>
+          {{i18n 'post_approval.settings.redirect.topic.message'}}
+        </label>
+        {{d-editor value=category.custom_fields.pa_redirect_topic_message}}
+      </section>
+
+      <section class='field'>
+        <label>
+          {{i18n 'post_approval.settings.redirect.reply.message'}}
+        </label>
+        {{d-editor value=category.custom_fields.pa_redirect_reply_message}}
+      </section>
+
+    </section>
+  {{/if}}
+{{/if}}
