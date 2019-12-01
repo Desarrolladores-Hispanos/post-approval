@@ -24,7 +24,7 @@ en:
           topic_name: "New Topic Title"
           radio_label: "As New Topic"
         reply:
-          error: "There was an error moving posts into that topic."
+          error: "There was an error creating the reply."
           instructions: "Please choose the topic you'd like to move this request to as a reply."
           title: "Approve as Reply To Topic"
           radio_label: "As Reply To Topic"
