@@ -158,9 +158,7 @@ after_initialize do
       raise Discourse::NotFound.new unless SiteSetting.post_approval_enabled &&
         SiteSetting.post_approval_button_enabled
       
-      raise Discourse::InvalidAccess.new unless GroupUser.where(group_id: Group.find_by(name: SiteSetting.post_approval_button_group).id)
-        .where(user_id: current_user.id)
-        .exists?
+      raise Discourse::InvalidAccess.new unless Group.find_by(name: SiteSetting.post_approval_button_group).users.include?(current_user)
 
       # Validate post approval PM
       pm_topic = Topic.find_by(id: params[:pm_topic_id], archetype: Archetype.private_message)
@@ -326,18 +324,13 @@ after_initialize do
 
   # Showing users whether they are post approval members
 
-  # TODO: are groups available already on the client? do we need this?
   add_to_serializer(:current_user, :is_post_approval) {
-    # TODO: make sure this is the cheapest possible way to find out group membership,
-    # since this affects every page and every user
     group = Group.find_by(name: SiteSetting.post_approval_button_group)
-
     if group
-      GroupUser.where(group_id: Group.find_by(name: SiteSetting.post_approval_button_group).id)
-        .where(user_id: object.id)
-        .exists?
+      group.users.include?(object)
     end
   }
+  
   add_to_serializer(:current_user, :include_is_post_approval?) {
     SiteSetting.post_approval_enabled && SiteSetting.post_approval_button_enabled
   }
