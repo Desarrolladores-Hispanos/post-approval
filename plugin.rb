@@ -63,7 +63,7 @@ after_initialize do
   # Prevent first post notifications on topics that are about to be redirected
 
   module PostAlerterInterceptor
-    def is_redirectable(topic)
+    def is_redirectable_topic(topic)
       return SiteSetting.post_approval_enabled &&
         SiteSetting.post_approval_redirect_enabled &&
         SiteSetting.post_approval_redirect_group.present? &&
@@ -71,22 +71,31 @@ after_initialize do
         topic.user&.trust_level <= SiteSetting.post_approval_redirect_tl_max &&
         topic.category&.pa_redirect_topic_enabled
     end
-    module_function :is_redirectable
+    module_function :is_redirectable_topic
+
+    def is_redirectable_reply(reply)
+      category = Category.find_by(id: reply.topic.category_id)
+      return SiteSetting.post_approval_enabled &&
+        SiteSetting.post_approval_redirect_enabled &&
+        SiteSetting.post_approval_redirect_group.present? &&
+        !(reply.custom_fields["post_approval"]) && # suppress notifications unless post was already approved
+        reply.user&.trust_level <= SiteSetting.post_approval_redirect_tl_max &&
+        category && category.pa_redirect_reply_enabled
+    end
+    module_function :is_redirectable_reply
 
     def after_save_post(post, new_record)
       # Do not pass to super if this is a post that is about to be redirected
       super(post, new_record) unless (post.is_first_post? &&
-        PostAlerterInterceptor.is_redirectable(post.topic))
+        PostAlerterInterceptor.is_redirectable_topic(post.topic))
+        # TODO: REPLIES: change this condition to also suppress notifications for new replies
     end
   end
   PostAlerter.send(:prepend, PostAlerterInterceptor)
 
   # Redirect topics on creation
 
-  DiscourseEvent.on(:topic_created) do |topic|
-    # Only proceed if the topic needs to be redirected
-    next unless PostAlerterInterceptor.is_redirectable(topic)
-
+  def redirect_topic(topic)
     # Find post approval team group
     group = Group.lookup_group(SiteSetting.post_approval_redirect_group)
 
@@ -134,6 +143,35 @@ after_initialize do
           group_id: group.id
         }.to_json
       )
+    end
+  end
+
+  def redirect_reply(reply)
+    # Find post approval team group
+    group = Group.lookup_group(SiteSetting.post_approval_redirect_group)
+
+    # TODO: REPLIES: implement procedure for replies
+
+      # Fetch the raw text, and topic url/id, of reply
+        # Use: SiteSetting.post_approval_redirect_reply_prefix
+
+      # Delete the reply
+        # This might be confusing for user unless we redirect them
+
+      # Make message to post approval
+        # How do we link user to response as they post, so they are not confused?
+
+      # Append system message from category
+        # Use: request_category.pa_redirect_reply_message
+
+  end
+
+  DiscourseEvent.on(:post_created) do |post|
+    # Only proceed if the post needs to be redirected
+    if post.is_first_post?
+      redirect_topic(post.topic) if PostAlerterInterceptor.is_redirectable_topic(post.topic)
+    else
+      redirect_reply(post) if PostAlerterInterceptor.is_redirectable_reply(post)
     end
   end
 
@@ -229,7 +267,7 @@ after_initialize do
           raw: pm_topic.posts.first.raw,
           user: pm_topic.user,
           custom_fields: {
-            post_approval: true # Make sure it triggers notifications
+            post_approval: true # marker to let ourselves know not to suppress notifications
           },
           skip_validations: true, # They've already gone through the validations to make the reply first
         )
