@@ -323,6 +323,7 @@ after_initialize do
   end
 
   # Showing users whether they are post approval members
+  # TODO: the following could just be made entirely client-sided
 
   add_to_serializer(:current_user, :is_post_approval) {
     group = Group.find_by(name: SiteSetting.post_approval_button_group)
