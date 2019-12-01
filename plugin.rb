@@ -69,7 +69,7 @@ after_initialize do
         SiteSetting.post_approval_redirect_group.present? &&
         !(topic.custom_fields["post_approval"]) && # TODO: test+fix this, custom marker to fall-through
         topic.user&.trust_level <= SiteSetting.post_approval_redirect_tl_max &&
-        topic.category&.pa_redirect_topic_enableds
+        topic.category&.pa_redirect_topic_enabled
     end
     module_function :is_redirectable
 
