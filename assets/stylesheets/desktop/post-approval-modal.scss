@@ -1,0 +1,56 @@
+.post-approval-modal {
+  .modal-body {
+    position: relative;
+    height: 350px;
+  }
+
+  #move-post-approval {
+    // prevents content from moving when user selects different move options 525px
+    // is the same width we set on category edit modal
+    width: 525px;
+
+    p {
+      margin-top: 0;
+    }
+
+    .radios {
+      margin-bottom: 10px;
+      display: flex;
+      flex-direction: row;
+
+      .radio-label {
+        display: inline-block;
+        padding-right: 15px;
+      }
+    }
+
+    button {
+      margin-top: 10px;
+      display: block;
+      width: 300px;
+    }
+
+    .category-chooser {
+      margin-bottom: 9px;
+    }
+
+    form {
+      width: 95%;
+      margin-top: 20px;
+      #split-topic-name,
+      #choose-topic-title,
+      #choose-message-title {
+        width: 100%;
+      }
+
+      .participant-selector {
+        width: 100%;
+      }
+
+      div.ac-wrap {
+        width: 100%;
+        margin-bottom: 9px;
+      }
+    }
+  }
+}

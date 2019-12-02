@@ -1,10 +1,30 @@
 en:
-  site_settings:
-    post_approval_finish_enabled: "Enable the post approval completion button"
-    post_approval_finish_from_category: "Category that post approval requests are in"
-    post_approval_finish_group: "Group that can finish post approval requests"
-    post_approval_finish_badge: "Badge to award for passing post approval"
-    post_approval_finish_topic_template: "Message for topic approval requests"
-    post_approval_finish_topic_template_alt: "Message for unnecessary topic approval requests"
-    post_approval_finish_reply_template: "Message for reply approval requests"
-    post_approval_finish_reply_template_alt: "Message for unnecessary reply approval requests"
+  js:
+    post_approval:
+      button:
+        title: "Approve Post"
+        help: "Complete Post Approval procedure on this post"
+      settings:
+        title: "Post Approval"
+        redirect:
+          topic:
+            enabled: "Redirect new topics by low trust levels to post approval?"
+            message: "Message to send along when redirecting new topics"
+          reply:
+            enabled: "Redirect replies by low trust levels to post approval?"
+            message: "Message to send along when redirecting new topics"
+      modal:
+        badge:
+          title: "Award Post Approval badge for this post"
+        title: "Post Approval"
+        topic:
+          error: "There was an error creating the new topic."
+          instructions: "You are about to complete this request by creating it as a new topic."
+          title: "Approve as New Topic"
+          topic_name: "New Topic Title"
+          radio_label: "As New Topic"
+        reply:
+          error: "There was an error creating the reply."
+          instructions: "Please choose the topic you'd like to move this request to as a reply."
+          title: "Approve as Reply To Topic"
+          radio_label: "As Reply To Topic"

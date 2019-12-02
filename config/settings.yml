@@ -1,23 +1,37 @@
 plugins:
-  post_approval_finish_enabled:
+  post_approval_enabled:
     default: true
+    client: true
 
-  post_approval_finish_from_category:
-    type: category
+  post_approval_badge:
     default: 0
 
-  post_approval_finish_group:
+  post_approval_redirect_enabled:
+    default: true
+    client: true
+  post_approval_redirect_tl_max:
+    default: 1
+  post_approval_redirect_group:
+    default: "Post_Approval"
+  post_approval_redirect_topic_prefix:
+    default: "%s > "
+  post_approval_redirect_reply_prefix:
+    default: "Reply to Topic > "
+
+  post_approval_button_enabled:
+    default: true
+    client: true
+  post_approval_button_group:
     default: "Community_Sage"
+    client: true
 
-  post_approval_finish_badge:
-    default: 0
-
-  post_approval_finish_topic_template:
-    default: "Hey %USER%, we have reviewed your topic and have approved it for the %CATEGORYNAME% category.\n\nYour topic has been cloned into the category. You can find the new topic here:\n%TOPICLINK%\n\nThank you for your contribution to the Developer Forum, we really appreciate it!"
-  post_approval_finish_topic_template_unnecessary:
-    default: "Hey %USER%, your topic seems most appropriate for the %CATEGORYNAME% category, which you do not need to use post approval for, since you can create topics there directly.\n\nHowever, to save you some work having to repost it, we have moved it to %CATEGORYNAME% for you. You can find the topic here:\n%TOPICLINK%\n\nThanks and let us know if you have any questions!"
-
-  post_approval_finish_reply_template:
-    default: "" # TODO
-  post_approval_finish_reply_template_unnecessary:
-    default: "" # TODO
+  post_approval_response_topic:
+    default: "Thanks for your contribution! Your topic has been **approved** for **%CATEGORY%** here:\n%POST%"
+  post_approval_response_reply:
+    default: "Thanks for your contribution! Your post has been **approved** as **reply** to an existing topic here:\n%POST%"
+  post_approval_response_badge:
+    default: "🥇 Since you blazed through post approval, you got the %BADGE% badge for this post! Well done!"
+  post_approval_response_topic_footer:
+    default: "PS: You don't have to go through post approval for the %CATEGORY% category, so you can post there directly on your own in the future!"
+  post_approval_response_reply_footer:
+    default: "PS: You already have the required trust level to reply to this topic yourself, so you can post there directly on your own in the future without going through post approval!"

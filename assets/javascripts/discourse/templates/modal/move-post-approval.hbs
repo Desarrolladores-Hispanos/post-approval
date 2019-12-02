@@ -1,0 +1,52 @@
+{{#d-modal-body id='move-post-approval'}}
+
+    <div class="radios">
+        <label class="radio-label" for="move-to-new-topic">
+            {{radio-button id='move-to-new-topic' name="move-to-entity" value="new_topic" selection=selection}}
+            <b>{{i18n 'post_approval.modal.topic.radio_label'}}</b>
+        </label>
+
+        <label class="radio-label" for="move-to-existing-topic">
+            {{radio-button id='move-to-existing-topic' name="move-to-entity" value="existing_topic" selection=selection}}
+            <b>{{i18n 'post_approval.modal.reply.radio_label'}}</b>
+        </label>
+
+    </div>
+
+    {{#if existingTopic}}
+        <p>{{{i18n 'post_approval.modal.reply.instructions' count=1}}}</p>
+        <form>
+            {{choose-topic currentTopicId=model.id selectedTopicId=selectedTopicId}}
+        </form>
+    {{/if}}
+
+    {{#if newTopic}}
+        <p>{{{i18n 'post_approval.modal.topic.instructions' count=1}}}</p>
+        <form>
+            <label>{{i18n 'post_approval.modal.topic.topic_name'}}</label>
+            {{text-field value=topicName placeholderKey="composer.title_placeholder" elementId='split-topic-name'}}
+
+            <label>{{i18n 'categories.category'}}</label>
+            {{category-chooser value=categoryId class="small"}}
+
+            {{#if canAddTags}}
+                <label>{{i18n 'tagging.tags'}}</label>
+                {{tag-chooser tags=tags filterable=true categoryId=categoryId}}
+            {{/if}}
+        </form>
+    {{/if}}
+
+    <div>
+        <label>
+            {{input type="checkbox" checked=awardBadge }}
+            {{i18n 'post_approval.modal.badge.title'}}
+        </label>
+    </div>
+
+{{/d-modal-body}}
+
+<div class="modal-footer">
+    {{#d-button class="btn-primary" disabled=buttonDisabled action=(action "completePostApproval")}}
+        {{d-icon "check"}} {{buttonTitle}}
+    {{/d-button}}
+</div>
