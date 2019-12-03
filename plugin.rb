@@ -184,7 +184,7 @@ after_initialize do
     # Delete the reply
     reply.revise(
       Discourse.system_user,
-      raw: "**Your reply is under review, see [here](#{pm.url}) for details.**\n\n" + reply.raw,
+      raw: SiteSetting.post_approval_redirect_reply_notice.gsub("%URL%", pm.url) + "\n\n---\n\n" + reply.raw,
       skip_validations: true
     )
     PostDestroyer.new(Discourse.system_user, reply).destroy

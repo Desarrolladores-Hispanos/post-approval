@@ -19,6 +19,8 @@ plugins:
   post_approval_redirect_reply_prefix:
     default: "Reply to Topic > "
     client: true
+  post_approval_redirect_reply_notice:
+    default: "***This reply is awaiting review, please go [here](%URL%) for details.***"
 
   post_approval_button_enabled:
     default: true
@@ -32,8 +34,8 @@ plugins:
   post_approval_response_reply:
     default: "Thanks for your contribution! Your post has been **approved** as **reply** to an existing topic here:\n%POST%"
   post_approval_response_badge:
-    default: "🥇 Since you blazed through post approval, you got the %BADGE% badge for this post! Well done!"
+    default: "🥇 Since you blazed through post approval, you got the **%BADGE%** badge for this post! Well done!"
   post_approval_response_topic_footer:
-    default: "PS: You don't have to go through post approval for the %CATEGORY% category, so you can post there directly on your own in the future!"
+    default: "PS: You don't have to go through post approval for %CATEGORY%, so you can post there directly on your own in the future!"
   post_approval_response_reply_footer:
     default: "PS: You already have the required trust level to reply to this topic yourself, so you can post there directly on your own in the future without going through post approval!"
