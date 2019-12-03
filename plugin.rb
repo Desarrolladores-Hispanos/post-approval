@@ -246,6 +246,7 @@ after_initialize do
             post_approval: true # marker to let ourselves know not to suppress notifications
           },
           skip_validations: true, # They've already gone through the validations to make the topic first
+          skip_guardian: true,
         )
 
       elsif (!params[:target_topic_id].blank?)
@@ -270,6 +271,7 @@ after_initialize do
             post_approval: true # marker to let ourselves know not to suppress notifications
           },
           skip_validations: true, # They've already gone through the validations to make the reply first
+          skip_guardian: true,
         )
 
       else
