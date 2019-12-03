@@ -6,6 +6,7 @@ import DiscourseURL from "discourse/lib/url";
 import { default as computed } from "ember-addons/ember-computed-decorators";
 import { extractError } from "discourse/lib/ajax-error";
 import { ajax } from "discourse/lib/ajax";
+import Category from "discourse/models/category";
 
 export default Controller.extend(ModalFunctionality, {
     topicName: null,
@@ -52,38 +53,43 @@ export default Controller.extend(ModalFunctionality, {
         }
     },
 
-    predictSelection() {
-        const currentTitle = this.get("model.title");
+    onShow() {
+        // Default parameters:
+
+        var predictedSelection = "new_topic";
+        var predictedTopicName = this.get("model.title");
+        var predictedCategoryId = null;
+        var predictedSelectedTopicId = null;
+
+        // Smart prediction:
 
         // TODO: use settings rather than hardcoding this?
-        if (currentTitle.includes("Reply to Topic") || currentTitle.includes("Request to Reply"))
-            return "existing_topic";
+        if (predictedTopicName.includes("Reply to Topic")
+         || predictedTopicName.includes("Request to Reply")
+         || predictedTopicName.includes(Discourse.SiteSettings.post_approval_redirect_reply_prefix))
+            predictedSelection = "existing_topic";
 
-        return "new_topic";
-    },
+        const category = Category.list().forEach(
+            c => {
+                const prefix = Discourse.SiteSettings.post_approval_redirect_topic_prefix.replace("%s", c.get("name"));
+                if (predictedTopicName.startsWith(prefix)) {
+                    predictedTopicName = predictedTopicName.slice(prefix.length);
+                    predictedCategoryId = c.get("id");
+                }
+            }
+        );
 
-    predictTopicName() {
-        return this.get("model.title"); // TODO: remove any prefix? (infer from settings)
-    },
+        // TODO: predict selected topic for replies? (how?)
 
-    predictCategoryId() {
-        return null; // TODO: prepopulate from title? (infer from title + settings)
-    },
-
-    predictSelectedTopicId() {
-        return null; // TODO: predict selected topic for replies? (how?)
-    },
-
-    onShow() {
-        const currentName = this.get("model.title");
+        // Feed predicted properties to modal:
 
         this.setProperties({
             "modal.modalClass": "post-approval-modal",
             saving: false,
-            selection: this.predictSelection(),
-            topicName: this.predictTopicName(),
-            categoryId: this.predictCategoryId(),
-            selectedTopicId: this.predictSelectedTopicId(),
+            selection: predictedSelection,
+            topicName: predictedTopicName,
+            categoryId: predictedCategoryId,
+            selectedTopicId: predictedSelectedTopicId,
             tags: null
         });
     },
