@@ -46,6 +46,9 @@ after_initialize do
   add_to_serializer(:basic_category, :pa_redirect_reply_enabled) { object.pa_redirect_reply_enabled }
   add_to_serializer(:basic_category, :pa_redirect_reply_message) { object.pa_redirect_reply_message }
 
+  add_to_serializer(:post, :pa_target_topic_id) { object.custom_fields["pa_target_topic_id"] }
+  add_to_serializer(:post, :include_pa_target_topic_id?) { object.custom_fields["pa_target_topic_id"] != nil }
+
   # Prevent low TLs from editing topics into redirected categories
 
   module GuardianInterceptor
@@ -64,12 +67,13 @@ after_initialize do
 
   module PostAlerterInterceptor
     def is_redirectable_topic(topic)
+      category = topic.category
       return SiteSetting.post_approval_enabled &&
         SiteSetting.post_approval_redirect_enabled &&
         SiteSetting.post_approval_redirect_group.present? &&
         !(topic.custom_fields["post_approval"]) && # suppress notifications unless post was already approved
         topic.user&.trust_level <= SiteSetting.post_approval_redirect_tl_max &&
-        topic.category&.pa_redirect_topic_enabled
+        category && category.pa_redirect_topic_enabled
     end
     module_function :is_redirectable_topic
 
@@ -86,9 +90,12 @@ after_initialize do
 
     def after_save_post(post, new_record)
       # Do not pass to super if this is a post that is about to be redirected
-      super(post, new_record) unless (post.is_first_post? &&
-        PostAlerterInterceptor.is_redirectable_topic(post.topic))
-        # TODO: REPLIES: change this condition to also suppress notifications for new replies
+      if post.is_first_post?
+        return if PostAlerterInterceptor.is_redirectable_topic(post.topic)
+      else
+        return if PostAlerterInterceptor.is_redirectable_reply(post)
+      end
+      super(post, new_record)
     end
   end
   PostAlerter.send(:prepend, PostAlerterInterceptor)
@@ -117,11 +124,12 @@ after_initialize do
     topic.reload
 
     # Give system response to the message with details
-    PostCreator.create(Discourse.system_user,
+    PostCreator.create(
+      Discourse.system_user,
       raw: request_category.pa_redirect_topic_message,
       topic_id: topic.id,
-      wiki: true,
-      skip_validations: true)
+      skip_validations: true
+    )
 
     # Invite post approval
     TopicAllowedGroup.create!(topic_id: topic.id, group_id: group.id)
@@ -132,7 +140,6 @@ after_initialize do
       levels: [NotificationLevels.all[:watching], NotificationLevels.all[:watching_first_post]],
       id: topic.user.id
     ).find_each do |u|
-
       u.notifications.create!(
         notification_type: Notification.types[:invited_to_private_message],
         topic_id: topic.id,
@@ -150,20 +157,63 @@ after_initialize do
     # Find post approval team group
     group = Group.lookup_group(SiteSetting.post_approval_redirect_group)
 
-    # TODO: REPLIES: implement procedure for replies
+    target_topic = reply.topic
+    request_category = target_topic.category
 
-      # Fetch the raw text, and topic url/id, of reply
-        # Use: SiteSetting.post_approval_redirect_reply_prefix
+    # Respect message title bounds
+    title = SiteSetting.post_approval_redirect_reply_prefix + target_topic.title
+    if title.length > SiteSetting.max_topic_title_length
+      title = title[0, SiteSetting.max_topic_title_length - 3] << "..."
+    end
 
-      # Delete the reply
-        # This might be confusing for user unless we redirect them
+    # Make new post approval private message
+    pm = PostCreator.create(
+      reply.user,
+      title: title,
+      raw: reply.raw,
+      archetype: Archetype.private_message,
+      target_group_names: [group.name],
+      wiki: true,
+      custom_fields: {
+        pa_target_topic_id: target_topic.id # create a hidden link to the target topic
+      },
+      bypass_rate_limiter: true,
+      skip_validations: true
+    )
 
-      # Make message to post approval
-        # How do we link user to response as they post, so they are not confused?
+    # Delete the reply
+    reply.revise(
+      Discourse.system_user,
+      raw: "**Your reply is under review, see [here](#{pm.url}) for details.**\n\n" + reply.raw,
+      skip_validations: true
+    )
+    PostDestroyer.new(Discourse.system_user, reply).destroy
 
-      # Append system message from category
-        # Use: request_category.pa_redirect_reply_message
+    # Give system response to the message with details
+    PostCreator.create(
+      Discourse.system_user,
+      raw: request_category.pa_redirect_reply_message.gsub("%TOPIC%", "[#{target_topic.title}](#{target_topic.url})"),
+      topic_id: pm.topic.id,
+      skip_validations: true
+    )
 
+    # Send invite notification to post approval team members
+    group.users.where(
+      "group_users.notification_level in (:levels) AND user_id != :id",
+      levels: [NotificationLevels.all[:watching], NotificationLevels.all[:watching_first_post]],
+      id: pm.user.id
+    ).find_each do |u|
+      u.notifications.create!(
+        notification_type: Notification.types[:invited_to_private_message],
+        topic_id: pm.topic.id,
+        post_number: 1,
+        data: {
+          topic_title: pm.topic.title,
+          display_username: pm.user.username,
+          group_id: group.id
+        }.to_json
+      )
+    end
   end
 
   DiscourseEvent.on(:post_created) do |post|
