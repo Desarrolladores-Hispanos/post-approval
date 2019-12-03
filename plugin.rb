@@ -362,18 +362,4 @@ after_initialize do
     mount ::PostApproval::Engine, at: "/"
   end
 
-  # Showing users whether they are post approval members
-  # TODO: the following could just be made entirely client-sided
-
-  add_to_serializer(:current_user, :is_post_approval) {
-    group = Group.find_by(name: SiteSetting.post_approval_button_group)
-    if group
-      group.users.include?(object)
-    end
-  }
-  
-  add_to_serializer(:current_user, :include_is_post_approval?) {
-    SiteSetting.post_approval_enabled && SiteSetting.post_approval_button_enabled
-  }
-
 end
