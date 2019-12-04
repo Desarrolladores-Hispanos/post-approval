@@ -87,19 +87,16 @@ export default Controller.extend(ModalFunctionality, {
             predictedSelection = "existing_topic";
         
         const firstPost = this.get("model.postStream.posts")[0];
-        console.log(firstPost.get("pa_target_topic_id"));
         predictedSelectedTopicId = parseInt(firstPost.get("pa_target_topic_id")); // grab from marker
 
-        Category.list().forEach(
-            c => {
-                const prefix = Discourse.SiteSettings.post_approval_redirect_topic_prefix.replace("%s", c.get("name"));
-                if (predictedTopicName.startsWith(prefix)) {
-                    // Strip post approval prefix from title and parse category id
-                    predictedTopicName = predictedTopicName.slice(prefix.length);
-                    predictedCategoryId = c.get("id");
-                }
+        for (let c of Category.list()) {
+            const prefix = Discourse.SiteSettings.post_approval_redirect_topic_prefix.replace("%s", c.get("name"));
+            if (predictedTopicName.startsWith(prefix)) {
+                // Strip post approval prefix from title and parse category id
+                predictedTopicName = predictedTopicName.slice(prefix.length);
+                predictedCategoryId = c.get("id");
             }
-        );
+        }
 
         // Feed predicted properties to modal:
         this.setProperties({
