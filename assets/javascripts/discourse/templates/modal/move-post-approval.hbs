@@ -16,7 +16,7 @@
     {{#if existingTopic}}
         <p>{{{i18n 'post_approval.modal.reply.instructions' count=1}}}</p>
         <form>
-            {{choose-topic currentTopicId=model.id selectedTopicId=selectedTopicId}}
+            {{choose-topic currentTopicId=model.id selectedTopicId=selectedTopicId topicTitle=searchQuery}}
         </form>
     {{/if}}
 

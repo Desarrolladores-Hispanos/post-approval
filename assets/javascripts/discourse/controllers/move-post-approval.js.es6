@@ -7,6 +7,8 @@ import { default as computed } from "ember-addons/ember-computed-decorators";
 import { extractError } from "discourse/lib/ajax-error";
 import { ajax } from "discourse/lib/ajax";
 import Category from "discourse/models/category";
+import { next } from "@ember/runloop";
+import { observes } from "ember-addons/ember-computed-decorators";
 
 export default Controller.extend(ModalFunctionality, {
     topicName: null,
@@ -14,7 +16,9 @@ export default Controller.extend(ModalFunctionality, {
     categoryId: null,
     tags: null,
     canAddTags: alias("site.can_create_tag"),
+    searchQuery: null,
     selectedTopicId: null,
+    predictedSelectedTopicId: null,
     newTopic: equal("selection", "new_topic"),
     existingTopic: equal("selection", "existing_topic"),
     awardBadge: false,
@@ -53,45 +57,59 @@ export default Controller.extend(ModalFunctionality, {
         }
     },
 
+    @observes("existingTopic")
+    onExistingTopicWindow() {
+        if (this.existingTopic) {
+            if (this.predictedSelectedTopicId) {
+                this.set("selectedTopicId", this.predictedSelectedTopicId)
+                // Force results showing up, by changing the value briefly
+                this.set("searchQuery", null);
+                // Next frame
+                next(() => {
+                    this.set("searchQuery", this.predictedSelectedTopicId);
+                });
+            }
+        }
+    },
+
     onShow() {
         // Default parameters:
-
         var predictedSelection = "new_topic";
+        var predictedSelectedTopicId = null;
         var predictedTopicName = this.get("model.title");
         var predictedCategoryId = null;
-        var predictedSelectedTopicId = null;
+        
+        // Smart prediction of parameters:
 
-        // Smart prediction:
-
-        // TODO: use settings rather than hardcoding this?
         if (predictedTopicName.includes("Reply to Topic")
-         || predictedTopicName.includes("Request to Reply")
-         || predictedTopicName.includes(Discourse.SiteSettings.post_approval_redirect_reply_prefix))
+        || predictedTopicName.includes("Request to Reply")
+        || predictedTopicName.includes(Discourse.SiteSettings.post_approval_redirect_reply_prefix))
             predictedSelection = "existing_topic";
+        
+        const firstPost = this.get("model.postStream.posts")[0];
+        predictedSelectedTopicId = parseInt(firstPost.get("pa_target_topic_id")); // grab from marker
 
-        const category = Category.list().forEach(
-            c => {
-                const prefix = Discourse.SiteSettings.post_approval_redirect_topic_prefix.replace("%s", c.get("name"));
-                if (predictedTopicName.startsWith(prefix)) {
-                    predictedTopicName = predictedTopicName.slice(prefix.length);
-                    predictedCategoryId = c.get("id");
-                }
+        for (let c of Category.list()) {
+            const prefix = Discourse.SiteSettings.post_approval_redirect_topic_prefix.replace("%s", c.get("name"));
+            if (predictedTopicName.startsWith(prefix)) {
+                // Strip post approval prefix from title and parse category id
+                predictedTopicName = predictedTopicName.slice(prefix.length);
+                predictedCategoryId = c.get("id");
             }
-        );
-
-        // TODO: predict selected topic for replies? (how?)
+        }
 
         // Feed predicted properties to modal:
-
         this.setProperties({
             "modal.modalClass": "post-approval-modal",
             saving: false,
             selection: predictedSelection,
             topicName: predictedTopicName,
             categoryId: predictedCategoryId,
-            selectedTopicId: predictedSelectedTopicId,
+            predictedSelectedTopicId: predictedSelectedTopicId,
             tags: null
         });
+
+        this.onExistingTopicWindow();
     },
 
     actions: {
