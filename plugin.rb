@@ -84,6 +84,7 @@ after_initialize do
         SiteSetting.post_approval_redirect_group.present? &&
         !(reply.custom_fields["post_approval"]) && # suppress notifications unless post was already approved
         reply.user&.trust_level <= SiteSetting.post_approval_redirect_tl_max &&
+        reply.topic.user != reply.user &&
         category && category.pa_redirect_reply_enabled
     end
     module_function :is_redirectable_reply
