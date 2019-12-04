@@ -6,6 +6,9 @@ import DiscourseURL from "discourse/lib/url";
 import { default as computed } from "ember-addons/ember-computed-decorators";
 import { extractError } from "discourse/lib/ajax-error";
 import { ajax } from "discourse/lib/ajax";
+import Category from "discourse/models/category";
+import { next } from "@ember/runloop";
+import { observes } from "ember-addons/ember-computed-decorators";
 
 export default Controller.extend(ModalFunctionality, {
     topicName: null,
@@ -13,7 +16,9 @@ export default Controller.extend(ModalFunctionality, {
     categoryId: null,
     tags: null,
     canAddTags: alias("site.can_create_tag"),
+    searchQuery: null,
     selectedTopicId: null,
+    predictedSelectedTopicId: null,
     newTopic: equal("selection", "new_topic"),
     existingTopic: equal("selection", "existing_topic"),
     awardBadge: false,
@@ -52,40 +57,59 @@ export default Controller.extend(ModalFunctionality, {
         }
     },
 
-    predictSelection() {
-        const currentTitle = this.get("model.title");
-
-        // TODO: use settings rather than hardcoding this?
-        if (currentTitle.includes("Reply to Topic") || currentTitle.includes("Request to Reply"))
-            return "existing_topic";
-
-        return "new_topic";
-    },
-
-    predictTopicName() {
-        return this.get("model.title"); // TODO: remove any prefix? (infer from settings)
-    },
-
-    predictCategoryId() {
-        return null; // TODO: prepopulate from title? (infer from title + settings)
-    },
-
-    predictSelectedTopicId() {
-        return null; // TODO: predict selected topic for replies? (how?)
+    @observes("existingTopic")
+    onExistingTopicWindow() {
+        if (this.existingTopic) {
+            if (this.predictedSelectedTopicId) {
+                this.set("selectedTopicId", this.predictedSelectedTopicId)
+                // Force results showing up, by changing the value briefly
+                this.set("searchQuery", null);
+                // Next frame
+                next(() => {
+                    this.set("searchQuery", this.predictedSelectedTopicId);
+                });
+            }
+        }
     },
 
     onShow() {
-        const currentName = this.get("model.title");
+        // Default parameters:
+        var predictedSelection = "new_topic";
+        var predictedSelectedTopicId = null;
+        var predictedTopicName = this.get("model.title");
+        var predictedCategoryId = null;
+        
+        // Smart prediction of parameters:
 
+        if (predictedTopicName.includes("Reply to Topic")
+        || predictedTopicName.includes("Request to Reply")
+        || predictedTopicName.includes(Discourse.SiteSettings.post_approval_redirect_reply_prefix))
+            predictedSelection = "existing_topic";
+        
+        const firstPost = this.get("model.postStream.posts")[0];
+        predictedSelectedTopicId = parseInt(firstPost.get("pa_target_topic_id")); // grab from marker
+
+        for (let c of Category.list()) {
+            const prefix = Discourse.SiteSettings.post_approval_redirect_topic_prefix.replace("%s", c.get("name"));
+            if (predictedTopicName.startsWith(prefix)) {
+                // Strip post approval prefix from title and parse category id
+                predictedTopicName = predictedTopicName.slice(prefix.length);
+                predictedCategoryId = c.get("id");
+            }
+        }
+
+        // Feed predicted properties to modal:
         this.setProperties({
             "modal.modalClass": "post-approval-modal",
             saving: false,
-            selection: this.predictSelection(),
-            topicName: this.predictTopicName(),
-            categoryId: this.predictCategoryId(),
-            selectedTopicId: this.predictSelectedTopicId(),
+            selection: predictedSelection,
+            topicName: predictedTopicName,
+            categoryId: predictedCategoryId,
+            predictedSelectedTopicId: predictedSelectedTopicId,
             tags: null
         });
+
+        this.onExistingTopicWindow();
     },
 
     actions: {
