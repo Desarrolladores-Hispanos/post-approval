@@ -190,6 +190,9 @@ after_initialize do
     )
     PostDestroyer.new(Discourse.system_user, reply).destroy
 
+    # Unbump from Latest
+    target_topic.reset_bumped_at
+
     # Give system response to the message with details
     PostCreator.create(
       Discourse.system_user,
