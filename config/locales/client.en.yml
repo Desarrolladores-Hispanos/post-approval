@@ -12,7 +12,7 @@ en:
             message: "Message to send along when redirecting new topics"
           reply:
             enabled: "Redirect replies by low trust levels to post approval?"
-            message: "Message to send along when redirecting new topics"
+            message: "Message to send along when redirecting replies"
       modal:
         badge:
           title: "Award Post Approval badge for this post"
