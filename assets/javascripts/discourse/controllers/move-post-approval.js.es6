@@ -106,6 +106,8 @@ export default Controller.extend(ModalFunctionality, {
             topicName: predictedTopicName,
             categoryId: predictedCategoryId,
             predictedSelectedTopicId: predictedSelectedTopicId,
+            awardBadge: false,
+            searchQuery: "",
             tags: null
         });
 
