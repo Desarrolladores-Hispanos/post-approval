@@ -1,5 +1,5 @@
 # name: post-approval
-# version: 0.1.0
+# version: 0.1.1
 # authors: boyned/Kampfkarren, buildthomas
 
 enabled_site_setting :post_approval_enabled
