@@ -251,6 +251,25 @@ after_initialize do
     end
   end
 
+  # Whenever post approval group is invited to a private message, turn it into a wiki
+  module TopicInterceptor
+    def invite_group(user, group)
+      if SiteSetting.post_approval_enabled &&
+        group.name == SiteSetting.post_approval_redirect_group
+      
+        first_post.revise(
+          Discourse.system_user,
+          wiki: true,
+          bypass_rate_limiter: true,
+          skip_validations: true
+        )
+      end
+
+      super(user, group)
+    end
+  end
+  Topic.send(:prepend, TopicInterceptor)
+
   # Post approval completion endpoint
 
   module ::PostApproval
