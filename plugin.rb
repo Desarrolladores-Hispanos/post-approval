@@ -221,11 +221,33 @@ after_initialize do
   end
 
   DiscourseEvent.on(:post_created) do |post|
-    # Only proceed if the post needs to be redirected
     if post.is_first_post?
+
+      # Make sure new private messages to post approval group are turned into wikis
+      if SiteSetting.post_approval_enabled &&
+        post.topic.archetype == Archetype.private_message &&
+
+        group = Group.lookup_group(SiteSetting.post_approval_redirect_group)
+        if group && post.topic.topic_allowed_groups.find_by(group_id: group.id)
+
+          post.revise(
+            Discourse.system_user,
+            wiki: true,
+            bypass_rate_limiter: true,
+            skip_validations: true
+          )
+          
+        end
+      end
+
+      # Only proceed if the topic needs to be redirected
       redirect_topic(post.topic) if PostAlerterInterceptor.is_redirectable_topic(post.topic)
+
     else
+
+      # Only proceed if the reply needs to be redirected
       redirect_reply(post) if PostAlerterInterceptor.is_redirectable_reply(post)
+
     end
   end
 
