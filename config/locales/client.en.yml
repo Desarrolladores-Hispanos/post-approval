@@ -22,6 +22,7 @@ en:
             approved_post: "Approved topic/reply"
             pa_message: "Stay in request message"
             inbox: "Post approval inbox"
+        sort_inversed: "Sort post approval inbox from oldest to newest"
       modal:
         badge:
           title: "Award Post Approval badge for this post"

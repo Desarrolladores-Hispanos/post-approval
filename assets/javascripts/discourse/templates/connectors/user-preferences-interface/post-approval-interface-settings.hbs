@@ -1,28 +1,31 @@
 {{#if isPostApproval}}
     {{#if siteSettings.post_approval_enabled}}
-        {{#if siteSettings.post_approval_redirect_enabled}}
 
-            <div class="control-group post-approval">
+        <div class="control-group post-approval">
 
-                <label class="control-label">{{i18n 'post_approval.user.label'}}</label>
+            <label class="control-label">{{i18n 'post_approval.user.label'}}</label>
 
-                <div class="controls">
+            <div class="controls">
 
-                    <div class='controls-dropdown pref-post-approval-redirect'>
-                        <label for="user-post-approval-redirect">{{i18n 'post_approval.user.redirect.title'}}</label>
-                        {{combo-box
-                            valueProperty="value"
-                            content=redirectModes
-                            value=currentRedirectMode
-                            id="user-post-approval-redirect"
-                            onChange=(action (mut currentRedirectMode))
-                        }}
-                    </div>
-
+                <div class='controls-dropdown pref-post-approval-redirect'>
+                    <label for="user-post-approval-redirect">{{i18n 'post_approval.user.redirect.title'}}</label>
+                    {{combo-box
+                        valueProperty="value"
+                        content=redirectModes
+                        value=currentRedirectMode
+                        id="user-post-approval-redirect"
+                        onChange=(action (mut currentRedirectMode))
+                    }}
                 </div>
 
+                {{preference-checkbox
+                    labelKey="post_approval.user.sort_inversed"
+                    checked=model.custom_fields.pa_sort_inversed
+                }}
+
             </div>
+
+        </div>
             
-        {{/if}}
     {{/if}}
 {{/if}}

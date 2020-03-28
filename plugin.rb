@@ -252,6 +252,51 @@ after_initialize do
     end
   end
 
+  # Whenever post approval inbox is queried, order based on user settings
+  module TopicQueryInterceptor
+    def private_messages_for(user, type)
+      return super(user, type) unless SiteSetting.post_approval_enabled && type == :group &&
+        @options[:group_name] == SiteSetting.post_approval_redirect_group &&
+        @user.custom_fields["pa_sort_inversed"]
+
+      options = @options
+      options.reverse_merge!(per_page: per_page_setting)
+
+      result = Topic.includes(:tags)
+      result = result.includes(:allowed_users)
+      result = result.where("
+        topics.id IN (
+          SELECT topic_id FROM topic_allowed_groups
+          WHERE (
+            group_id IN (
+              SELECT group_id
+              FROM group_users
+              WHERE user_id = #{user.id.to_i}
+              OR #{user.staff?}
+            )
+          )
+          AND group_id IN (SELECT id FROM groups WHERE name ilike ?)
+        )",
+        @options[:group_name]
+      )
+
+      result = result.joins("LEFT OUTER JOIN topic_users AS tu ON (topics.id = tu.topic_id AND tu.user_id = #{user.id.to_i})")
+        .order("topics.bumped_at ASC") # This is the only change (DESC --> ASC)
+        .private_messages
+
+      result = result.limit(options[:per_page]) unless options[:limit] == false
+      result = result.visible if options[:visible] || @user.nil? || @user.regular?
+
+      if options[:page]
+        offset = options[:page].to_i * options[:per_page]
+        result = result.offset(offset) if offset > 0
+      end
+
+      result
+    end
+  end
+  TopicQuery.send(:prepend, TopicQueryInterceptor)
+
   # Whenever post approval group is invited to a private message, turn it into a wiki
   module TopicInterceptor
     def invite_group(user, group)
@@ -477,5 +522,10 @@ after_initialize do
   DiscoursePluginRegistry.serialized_current_user_fields << "pa_redirect_mode"
   add_to_serializer(:current_user, :pa_redirect_mode) { object.custom_fields["pa_redirect_mode"] }
   register_editable_user_custom_field :pa_redirect_mode
+
+  User.register_custom_field_type("pa_sort_inversed", :boolean)
+  DiscoursePluginRegistry.serialized_current_user_fields << "pa_sort_inversed"
+  add_to_serializer(:current_user, :pa_sort_inversed) { object.custom_fields["pa_sort_inversed"] }
+  register_editable_user_custom_field :pa_sort_inversed
 
 end
