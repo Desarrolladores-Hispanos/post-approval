@@ -1,5 +1,5 @@
 # name: post-approval
-# version: 0.2.1
+# version: 0.3.0
 # authors: buildthomas, boyned/Kampfkarren
 
 enabled_site_setting :post_approval_enabled
@@ -430,8 +430,15 @@ after_initialize do
       pm_topic.reload
       pm_topic.save
 
-      # Complete the request
-      render json: { url: post.url }
+      # Redirect the acting user depending on setting
+      setting = current_user.custom_fields["pa_redirect_mode"]
+      if setting == "pa_message"
+        render json: { url: reply.url } # stay in DM
+      elsif setting == "inbox"
+        render json: { url: "#{Discourse.base_url}/g/#{SiteSetting.post_approval_redirect_group}/messages/inbox" } # go to inbox
+      else # nil, "default", "approved_post"
+        render json: { url: post.url } # go to approved post
+      end
     end
 
     # Archiving a private message
@@ -463,5 +470,12 @@ after_initialize do
   Discourse::Application.routes.append do
     mount ::PostApproval::Engine, at: "/"
   end
+
+  # Custom user fields
+
+  User.register_custom_field_type("pa_redirect_mode", :string)
+  DiscoursePluginRegistry.serialized_current_user_fields << "pa_redirect_mode"
+  add_to_serializer(:current_user, :pa_redirect_mode) { object.custom_fields["pa_redirect_mode"] }
+  register_editable_user_custom_field :pa_redirect_mode
 
 end

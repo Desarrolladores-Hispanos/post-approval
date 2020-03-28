@@ -13,6 +13,15 @@ en:
           reply:
             enabled: "Redirect replies by low trust levels to post approval?"
             message: "Message to send along when redirecting replies"
+      user:
+        label: "Post Approval"
+        redirect:
+          title: "On completion of request, redirect to:"
+          options:
+            default: "(default)"
+            approved_post: "Approved topic/reply"
+            pa_message: "Stay in request message"
+            inbox: "Post approval inbox"
       modal:
         badge:
           title: "Award Post Approval badge for this post"
