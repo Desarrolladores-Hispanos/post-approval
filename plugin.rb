@@ -1,6 +1,6 @@
 # name: post-approval
-# version: 0.1.1
-# authors: boyned/Kampfkarren, buildthomas
+# version: 0.2.0
+# authors: buildthomas, boyned/Kampfkarren
 
 enabled_site_setting :post_approval_enabled
 
@@ -176,7 +176,8 @@ after_initialize do
       target_group_names: [group.name],
       wiki: true,
       custom_fields: {
-        pa_target_topic_id: target_topic.id # create a hidden link to the target topic
+        pa_target_topic_id: target_topic.id, # create a hidden link to the target topic
+        pa_reply_to_post_id: reply.reply_to_post&.id
       },
       bypass_rate_limiter: true,
       skip_validations: true
@@ -356,12 +357,19 @@ after_initialize do
           could_post_on_own = true
         end
 
+        # Find post number of the post the user was originally replying to
+        reply_to_post_number = nil
+        if pm_topic.custom_fields["pa_reply_to_post_id"] && target_topic.id == pm_topic.custom_fields["pa_target_topic_id"].to_i
+          reply_to_post_number = Post.with_deleted.find_by(id: pm_topic.custom_fields["pa_reply_to_post_id"])&.post_number
+        end
+
         # Create the new reply on the target topic
         post = PostCreator.create(
           pm_topic.user,
           topic_id: target_topic.id,
           raw: pm_topic.posts.first.raw,
           user: pm_topic.user,
+          reply_to_post_number: reply_to_post_number,
           custom_fields: {
             post_approval: true # marker to let ourselves know not to suppress notifications
           },
