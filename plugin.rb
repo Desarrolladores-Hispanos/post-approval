@@ -1,5 +1,5 @@
 # name: post-approval
-# version: 0.2.0
+# version: 0.2.1
 # authors: buildthomas, boyned/Kampfkarren
 
 enabled_site_setting :post_approval_enabled
@@ -353,9 +353,8 @@ after_initialize do
 
         target_category = Category.find_by(id: target_topic.category_id)
 
-        if Guardian.new(pm_topic.user).can_create_post_on_topic?(target_topic)
-          could_post_on_own = true
-        end
+        could_post_on_own = Guardian.new(pm_topic.user).can_create_post_on_topic?(target_topic) &&
+          !(target_category && target_category.pa_redirect_reply_enabled)
 
         # Find post number of the post the user was originally replying to
         reply_to_post_number = nil
