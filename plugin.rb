@@ -162,7 +162,7 @@ after_initialize do
     request_category = target_topic.category
 
     # Respect message title bounds
-    title = SiteSetting.post_approval_redirect_reply_prefix + target_topic.title
+    title = (SiteSetting.post_approval_redirect_reply_prefix % [request_category.name]) + target_topic.title
     if title.length > SiteSetting.max_topic_title_length
       title = title[0, SiteSetting.max_topic_title_length - 3] << "..."
     end
