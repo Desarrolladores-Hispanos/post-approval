@@ -1,5 +1,5 @@
 # name: post-approval
-# version: 0.4.0
+# version: 0.4.1
 # authors: buildthomas, boyned/Kampfkarren
 
 enabled_site_setting :post_approval_enabled
@@ -406,7 +406,8 @@ after_initialize do
         # Find post number of the post the user was originally replying to
         reply_to_post_number = nil
         if pm_topic.custom_fields["pa_reply_to_post_id"] && target_topic.id == pm_topic.custom_fields["pa_target_topic_id"].to_i
-          reply_to_post_number = Post.with_deleted.find_by(id: pm_topic.custom_fields["pa_reply_to_post_id"])&.post_number
+          post = Post.with_deleted.find_by(id: pm_topic.custom_fields["pa_reply_to_post_id"])
+          reply_to_post_number = post.post_number if post && post.topic == target_topic
         end
 
         # Create the new reply on the target topic
