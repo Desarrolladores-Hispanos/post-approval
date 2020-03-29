@@ -197,7 +197,7 @@ after_initialize do
     # Give system response to the message with details
     PostCreator.create(
       Discourse.system_user,
-      raw: request_category.pa_redirect_reply_message.gsub("%TOPIC%", "[#{target_topic.title}](#{target_topic.url})"),
+      raw: request_category.pa_redirect_reply_message.gsub("%TOPIC%", "[#{target_topic.title}](#{(reply.reply_to_post || target_topic).url})"),
       topic_id: pm.topic.id,
       skip_validations: true
     )
