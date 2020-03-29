@@ -80,20 +80,25 @@ export default Controller.extend(ModalFunctionality, {
         var predictedCategoryId = null;
         
         // Smart prediction of parameters:
-
-        if (predictedTopicName.includes("Reply to Topic")
-        || predictedTopicName.includes("Request to Reply")
-        || predictedTopicName.includes(Discourse.SiteSettings.post_approval_redirect_reply_prefix))
-            predictedSelection = "existing_topic";
         
         const firstPost = this.get("model.postStream.posts")[0];
         predictedSelectedTopicId = parseInt(firstPost.get("pa_target_topic_id")); // grab from marker
 
+        if (predictedSelectedTopicId == predictedSelectedTopicId
+        || predictedTopicName.includes("Reply to Topic")
+        || predictedTopicName.includes("Request to Reply"))
+            predictedSelection = "existing_topic";
+
         for (let c of Category.list()) {
-            const prefix = Discourse.SiteSettings.post_approval_redirect_topic_prefix.replace("%s", c.get("name"));
-            if (predictedTopicName.startsWith(prefix)) {
-                // Strip post approval prefix from title and parse category id
-                predictedTopicName = predictedTopicName.slice(prefix.length);
+            const topicPrefix = Discourse.SiteSettings.post_approval_redirect_topic_prefix.replace("%s", c.get("name"));
+            const replyPrefix = Discourse.SiteSettings.post_approval_redirect_reply_prefix.replace("%s", c.get("name"));
+
+            // Strip post approval prefix from title and parse category id, if either matches
+            if (predictedTopicName.startsWith(topicPrefix)) {
+                predictedTopicName = predictedTopicName.slice(topicPrefix.length);
+                predictedCategoryId = c.get("id");
+            } else if (predictedTopicName.startsWith(replyPrefix)) {
+                predictedTopicName = predictedTopicName.slice(replyPrefix.length);
                 predictedCategoryId = c.get("id");
             }
         }
