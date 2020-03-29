@@ -11,7 +11,9 @@ plugins:
     client: true
   post_approval_redirect_tl_max:
     default: 1
-  post_approval_redirect_group:
+  post_approval_redirect_topic_group:
+    default: "Post_Approval"
+  post_approval_redirect_reply_group:
     default: "Post_Approval"
   post_approval_redirect_topic_prefix:
     default: "%s > "
@@ -26,7 +28,7 @@ plugins:
     default: true
     client: true
   post_approval_button_group:
-    default: "Community_Sage"
+    default: "Post_Approval"
     client: true
 
   post_approval_response_topic:

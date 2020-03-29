@@ -1,5 +1,5 @@
 # name: post-approval
-# version: 0.3.0
+# version: 0.4.0
 # authors: buildthomas, boyned/Kampfkarren
 
 enabled_site_setting :post_approval_enabled
@@ -70,7 +70,7 @@ after_initialize do
       category = topic.category
       return SiteSetting.post_approval_enabled &&
         SiteSetting.post_approval_redirect_enabled &&
-        SiteSetting.post_approval_redirect_group.present? &&
+        SiteSetting.post_approval_redirect_topic_group.present? &&
         !(topic.custom_fields["post_approval"]) && # suppress notifications unless post was already approved
         topic.user&.trust_level <= SiteSetting.post_approval_redirect_tl_max &&
         category && category.pa_redirect_topic_enabled
@@ -81,7 +81,7 @@ after_initialize do
       category = Category.find_by(id: reply.topic.category_id)
       return SiteSetting.post_approval_enabled &&
         SiteSetting.post_approval_redirect_enabled &&
-        SiteSetting.post_approval_redirect_group.present? &&
+        SiteSetting.post_approval_redirect_reply_group.present? &&
         !(reply.custom_fields["post_approval"]) && # suppress notifications unless post was already approved
         reply.user&.trust_level <= SiteSetting.post_approval_redirect_tl_max &&
         reply.topic.user != reply.user &&
@@ -105,7 +105,7 @@ after_initialize do
 
   def redirect_topic(topic)
     # Find post approval team group
-    group = Group.lookup_group(SiteSetting.post_approval_redirect_group)
+    group = Group.lookup_group(SiteSetting.post_approval_redirect_topic_group)
 
     # Turn it into a private message
     request_category = topic.category
@@ -156,7 +156,7 @@ after_initialize do
 
   def redirect_reply(reply)
     # Find post approval team group
-    group = Group.lookup_group(SiteSetting.post_approval_redirect_group)
+    group = Group.lookup_group(SiteSetting.post_approval_redirect_reply_group)
 
     target_topic = reply.topic
     request_category = target_topic.category
@@ -228,8 +228,10 @@ after_initialize do
       if SiteSetting.post_approval_enabled &&
         post.topic.archetype == Archetype.private_message &&
 
-        group = Group.lookup_group(SiteSetting.post_approval_redirect_group)
-        if group && post.topic.topic_allowed_groups.find_by(group_id: group.id)
+        group_topic = Group.lookup_group(SiteSetting.post_approval_redirect_topic_group)
+        group_reply = Group.lookup_group(SiteSetting.post_approval_redirect_reply_group)
+        if (group_topic && post.topic.topic_allowed_groups.find_by(group_id: group_topic.id)) ||
+           (group_reply && post.topic.topic_allowed_groups.find_by(group_id: group_reply.id))
 
           post.revise(
             Discourse.system_user,
@@ -256,7 +258,8 @@ after_initialize do
   module TopicQueryInterceptor
     def private_messages_for(user, type)
       return super(user, type) unless SiteSetting.post_approval_enabled && type == :group &&
-        @options[:group_name] == SiteSetting.post_approval_redirect_group &&
+        (@options[:group_name] == SiteSetting.post_approval_redirect_topic_group ||
+          @options[:group_name] == SiteSetting.post_approval_redirect_reply_group) &&
         @user.custom_fields["pa_sort_inversed"]
 
       options = @options
@@ -301,7 +304,8 @@ after_initialize do
   module TopicInterceptor
     def invite_group(user, group)
       if SiteSetting.post_approval_enabled &&
-        group.name == SiteSetting.post_approval_redirect_group
+        (group.name == SiteSetting.post_approval_redirect_topic_group ||
+          group.name == SiteSetting.post_approval_redirect_reply_group)
       
         first_post.revise(
           Discourse.system_user,
@@ -480,7 +484,14 @@ after_initialize do
       if setting == "pa_message"
         render json: { url: reply.url } # stay in DM
       elsif setting == "inbox"
-        render json: { url: "#{Discourse.base_url}/g/#{SiteSetting.post_approval_redirect_group}/messages/inbox" } # go to inbox
+        group_reply = Group.lookup_group(SiteSetting.post_approval_redirect_reply_group)
+        if group_reply && pm_topic.topic_allowed_groups.find_by(group_id: group_reply.id)
+          # go back to reply inbox if dm is addressed to reply group
+          render json: { url: "#{Discourse.base_url}/g/#{SiteSetting.post_approval_redirect_reply_group}/messages/inbox" }
+        else
+          # go back to topic inbox otherwise
+          render json: { url: "#{Discourse.base_url}/g/#{SiteSetting.post_approval_redirect_topic_group}/messages/inbox" }
+        end
       else # nil, "default", "approved_post"
         render json: { url: post.url } # go to approved post
       end

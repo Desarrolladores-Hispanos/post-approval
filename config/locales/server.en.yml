@@ -6,7 +6,8 @@ en:
 
     post_approval_redirect_enabled: "Enable Post Approval redirection"
     post_approval_redirect_tl_max: "Max trust level that Post Approval redirection applies to"
-    post_approval_redirect_group: "Group to send Post Approval messages to"
+    post_approval_redirect_topic_group: "Group to send Post Approval requests for new topics to"
+    post_approval_redirect_reply_group: "Group to send Post Approval requests for new replies to"
     post_approval_redirect_topic_prefix: "Prefix for messages to Post Approval for topics"
     post_approval_redirect_reply_prefix: "Prefix for messages to Post Approval for replies"
 

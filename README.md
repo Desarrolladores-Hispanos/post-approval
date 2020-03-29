@@ -112,7 +112,7 @@ By default, the plugin will redirect posts (whenever that is appropriate) only w
 
 After installation, the following settings need to be adjusted:
 
-- `post_approval_redirect_group` must be set to the group that should receive redirected topics and replies as post approval requests. It defaults to "Post_Approval" as this is the name of the group on the Roblox Developer Forum.
+- `post_approval_redirect_topic_group` must be set to the group that should receive redirected topics as post approval requests. `post_approval_redirect_reply_group` must similarly be set to the group that should receive redirected replies as post approval requests. Both default to "Post_Approval" as this is the name of the group on the Roblox Developer Forum.
 
 - `post_approval_button_group` must be set to the group that can complete post approval requests via the modal in private messages. It defaults to "Community_Sage".
 
