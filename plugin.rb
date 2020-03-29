@@ -375,9 +375,7 @@ after_initialize do
         raise Discourse::InvalidParameters.new(:tags) unless (tags.kind_of?(Array) &&
           tags.select{|s| !s.instance_of?(String) || s.length == 0}.length == 0) # All strings, non-empty
 
-        if Guardian.new(pm_topic.user).can_move_topic_to_category?(target_category)
-          could_post_on_own = true
-        end
+        could_post_on_own ||= Guardian.new(pm_topic.user).can_move_topic_to_category?(target_category)
 
         # Create the new topic in the target category
         post = PostCreator.create(
@@ -402,8 +400,8 @@ after_initialize do
 
         target_category = Category.find_by(id: target_topic.category_id)
 
-        could_post_on_own = Guardian.new(pm_topic.user).can_create_post_on_topic?(target_topic) &&
-          !(target_category && target_category.pa_redirect_reply_enabled)
+        could_post_on_own ||= (Guardian.new(pm_topic.user).can_create_post_on_topic?(target_topic) &&
+          !(target_category && target_category.pa_redirect_reply_enabled))
 
         # Find post number of the post the user was originally replying to
         reply_to_post_number = nil
