@@ -1,5 +1,5 @@
 # name: post-approval
-# version: 0.4.1
+# version: 0.5.0
 # authors: buildthomas, boyned/Kampfkarren
 
 enabled_site_setting :post_approval_enabled
@@ -77,38 +77,87 @@ after_initialize do
   end
   Guardian.send(:prepend, GuardianInterceptor)
 
-  # Prevent first post notifications on topics that are about to be redirected
+  # Helper methods
 
-  module PostAlerterInterceptor
-    def is_redirectable_topic(topic)
-      category = topic.category
-      return SiteSetting.post_approval_enabled &&
-        SiteSetting.post_approval_redirect_enabled &&
-        SiteSetting.post_approval_redirect_topic_group.present? &&
-        !(topic.custom_fields["post_approval"]) && # suppress notifications unless post was already approved
-        topic.user&.trust_level <= SiteSetting.post_approval_redirect_tl_max &&
-        category && category.pa_redirect_topic_enabled
+  module PostApprovalHelper
+    def self.is_group_name?(group_name)
+      SiteSetting.post_approval_enabled &&
+        (group_name == SiteSetting.post_approval_redirect_topic_group ||
+         group_name == SiteSetting.post_approval_redirect_reply_group)
     end
-    module_function :is_redirectable_topic
 
-    def is_redirectable_reply(reply)
-      category = Category.find_by(id: reply.topic.category_id)
-      return SiteSetting.post_approval_enabled &&
+    def self.is_redirect_topics_enabled
+      SiteSetting.post_approval_enabled &&
         SiteSetting.post_approval_redirect_enabled &&
-        SiteSetting.post_approval_redirect_reply_group.present? &&
-        !(reply.custom_fields["post_approval"]) && # suppress notifications unless post was already approved
-        reply.user&.trust_level <= SiteSetting.post_approval_redirect_tl_max &&
+        SiteSetting.post_approval_redirect_topic_group.present?
+    end
+
+    def self.is_redirect_replies_enabled
+      SiteSetting.post_approval_enabled &&
+        SiteSetting.post_approval_redirect_enabled &&
+        SiteSetting.post_approval_redirect_reply_group.present?
+    end
+
+    def self.is_user_eligible?(user)
+      user&.trust_level <= SiteSetting.post_approval_redirect_tl_max
+    end
+    
+    def self.is_approved_post?(post)
+      !!post.custom_fields["post_approval"]
+    end
+
+    def self.is_topic_eligible?(topic)
+      topic.category && topic.category.pa_redirect_topic_enabled
+    end
+
+    def self.is_reply_eligible?(reply)
+      category = reply.topic.category
+      
+      category && category.pa_redirect_reply_enabled &&
         reply.topic.user != reply.user &&
-        category && category.pa_redirect_reply_enabled
+        !(SiteSetting.post_approval_redirect_only_first &&
+          Post.where(user_id: reply.user.id, topic_id: reply.topic.id).count > 1)
     end
-    module_function :is_redirectable_reply
 
+    def self.get_bump_hours(post)
+      return 0 unless !post.is_first_post? &&
+        post_before = Post.where(topic_id: post.topic_id)
+          .where("post_number < ?", post.post_number).reverse.first
+      
+      (post.created_at - post_before.created_at) / 3600
+    end
+
+    def self.is_bump_post?(reply)
+      category = reply.topic.category
+
+      category && category.pa_redirect_bump_reply_hours > 0 &&
+        get_bump_hours(reply) >= category.pa_redirect_bump_reply_hours
+    end
+
+    def self.is_redirectable_topic?(topic)
+      is_redirect_topics_enabled &&
+        is_user_eligible?(topic.user) &&
+        !is_approved_post?(topic) &&
+        is_topic_eligible?(topic)
+    end
+    
+    def self.is_redirectable_reply?(reply)
+      is_redirect_replies_enabled &&
+        is_user_eligible?(reply.user) &&
+        !is_approved_post?(reply) &&
+        (is_reply_eligible?(reply) || is_bump_post?(reply))
+    end
+  end
+
+  # Prevent first post notifications on topics that are about to be redirected
+    
+  module PostAlerterInterceptor
     def after_save_post(post, new_record)
       # Do not pass to super if this is a post that is about to be redirected
       if post.is_first_post?
-        return if PostAlerterInterceptor.is_redirectable_topic(post.topic)
+        return if PostApprovalHelper.is_redirectable_topic?(post.topic)
       else
-        return if PostAlerterInterceptor.is_redirectable_reply(post)
+        return if PostApprovalHelper.is_redirectable_reply?(post)
       end
       super(post, new_record)
     end
@@ -235,10 +284,16 @@ after_initialize do
     # Unbump from Latest
     target_topic.reset_bumped_at
 
+    template = PostApprovalHelper.is_bump_post?(reply) ?
+      request_category.pa_redirect_bump_reply_message :
+      request_category.pa_redirect_reply_message
+    template = template.gsub("%TOPIC%", "[#{target_topic.title}](#{(reply.reply_to_post || target_topic).url})")
+    template = template.gsub("%HOURS%", format_hours(PostApprovalHelper.get_bump_hours(reply)))
+
     # Give system response to the message with details
     PostCreator.create(
       Discourse.system_user,
-      raw: request_category.pa_redirect_reply_message.gsub("%TOPIC%", "[#{target_topic.title}](#{(reply.reply_to_post || target_topic).url})"),
+      raw: template,
       topic_id: pm.topic.id,
       skip_validations: true
     )
@@ -285,12 +340,12 @@ after_initialize do
       end
 
       # Only proceed if the topic needs to be redirected
-      redirect_topic(post.topic) if PostAlerterInterceptor.is_redirectable_topic(post.topic)
+      redirect_topic(post.topic) if PostApprovalHelper.is_redirectable_topic?(post.topic)
 
     else
 
       # Only proceed if the reply needs to be redirected
-      redirect_reply(post) if PostAlerterInterceptor.is_redirectable_reply(post)
+      redirect_reply(post) if PostApprovalHelper.is_redirectable_reply?(post)
 
     end
   end
@@ -344,10 +399,7 @@ after_initialize do
   # Whenever post approval group is invited to a private message, turn it into a wiki
   module TopicInterceptor
     def invite_group(user, group)
-      if SiteSetting.post_approval_enabled &&
-        (group.name == SiteSetting.post_approval_redirect_topic_group ||
-          group.name == SiteSetting.post_approval_redirect_reply_group)
-      
+      if PostApprovalHelper.is_group_name?(group.name)
         first_post.revise(
           Discourse.system_user,
           wiki: true,

@@ -25,6 +25,9 @@ plugins:
   post_approval_redirect_reply_notice:
     default: "**This reply is awaiting review, please go [here](%URL%) for details.**"
 
+  post_approval_redirect_only_first:
+    default: false
+
   post_approval_button_enabled:
     default: true
     client: true

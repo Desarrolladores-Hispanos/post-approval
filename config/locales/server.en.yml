@@ -11,6 +11,10 @@ en:
     post_approval_redirect_topic_prefix: "Prefix for messages to Post Approval for topics"
     post_approval_redirect_reply_prefix: "Prefix for messages to Post Approval for replies"
 
+    post_approval_redirect_reply_notice: "Message that links users to request on redirected replies"
+
+    post_approval_redirect_only_first: "Only redirect the first reply of each user per topic through Post Approval"
+
     post_approval_button_enabled: "Enable button to finish Post Approval requests"
     post_approval_button_group: "Group that can use button to finish Post Approval requests"
     
