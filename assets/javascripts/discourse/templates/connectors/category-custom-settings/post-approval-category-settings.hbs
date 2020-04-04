@@ -19,6 +19,13 @@
 
       <section class='field'>
         <label>
+          {{i18n 'post_approval.settings.redirect.bump.hours'}}
+        </label>
+        {{text-field value=category.custom_fields.pa_redirect_bump_reply_hours type="number"}}
+      </section>
+
+      <section class='field'>
+        <label>
           {{i18n 'post_approval.settings.redirect.topic.message'}}
         </label>
         {{d-editor value=category.custom_fields.pa_redirect_topic_message}}
@@ -29,6 +36,13 @@
           {{i18n 'post_approval.settings.redirect.reply.message'}}
         </label>
         {{d-editor value=category.custom_fields.pa_redirect_reply_message}}
+      </section>
+
+      <section class='field'>
+        <label>
+          {{i18n 'post_approval.settings.redirect.bump.message'}}
+        </label>
+        {{d-editor value=category.custom_fields.pa_redirect_bump_reply_message}}
       </section>
 
     </section>

@@ -13,6 +13,9 @@ en:
           reply:
             enabled: "Redirect replies by low trust levels to post approval?"
             message: "Message to send along when redirecting replies"
+          bump:
+            hours: "Redirect replies that bump topics by this many hours (0 = disabled)"
+            message: "Message to send along when redirecting bump posts"
       user:
         label: "Post Approval"
         redirect:
