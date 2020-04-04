@@ -1,5 +1,5 @@
 # name: post-approval
-# version: 0.5.0
+# version: 0.5.1
 # authors: buildthomas, boyned/Kampfkarren
 
 enabled_site_setting :post_approval_enabled
@@ -352,11 +352,14 @@ after_initialize do
 
   # Whenever post approval inbox is queried, order based on user settings
   module TopicQueryInterceptor
+
+    def list_private_messages_group(user) # only for inbox, not archive
+      @pa_inverse = PostApprovalHelper.is_group_name?(@options[:group_name]) && @user.custom_fields["pa_sort_inversed"]
+      super(user)
+    end
+
     def private_messages_for(user, type)
-      return super(user, type) unless SiteSetting.post_approval_enabled && type == :group &&
-        (@options[:group_name] == SiteSetting.post_approval_redirect_topic_group ||
-          @options[:group_name] == SiteSetting.post_approval_redirect_reply_group) &&
-        @user.custom_fields["pa_sort_inversed"]
+      return super(user, type) unless @pa_inverse && type == :group
 
       options = @options
       options.reverse_merge!(per_page: per_page_setting)
