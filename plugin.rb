@@ -17,11 +17,15 @@ after_initialize do
   Site.preloaded_category_custom_fields << "pa_redirect_topic_message"
   Site.preloaded_category_custom_fields << "pa_redirect_reply_enabled"
   Site.preloaded_category_custom_fields << "pa_redirect_reply_message"
+  Site.preloaded_category_custom_fields << "pa_redirect_bump_reply_hours"
+  Site.preloaded_category_custom_fields << "pa_redirect_bump_reply_message"
 
   register_category_custom_field_type("pa_redirect_topic_enabled", :boolean)
   register_category_custom_field_type("pa_redirect_topic_message", :text)
   register_category_custom_field_type("pa_redirect_reply_enabled", :boolean)
   register_category_custom_field_type("pa_redirect_reply_message", :text)
+  register_category_custom_field_type("pa_redirect_bump_reply_hours", :integer)
+  register_category_custom_field_type("pa_redirect_bump_reply_message", :text)
 
   class ::Category
     def pa_redirect_topic_enabled
@@ -39,12 +43,22 @@ after_initialize do
     def pa_redirect_reply_message
       self.custom_fields["pa_redirect_reply_message"]
     end
+
+    def pa_redirect_bump_reply_hours
+      self.custom_fields["pa_redirect_bump_reply_hours"] || 0
+    end
+
+    def pa_redirect_bump_reply_message
+      self.custom_fields["pa_redirect_bump_reply_message"]
+    end
   end
 
   add_to_serializer(:basic_category, :pa_redirect_topic_enabled) { object.pa_redirect_topic_enabled }
   add_to_serializer(:basic_category, :pa_redirect_topic_message) { object.pa_redirect_topic_message }
   add_to_serializer(:basic_category, :pa_redirect_reply_enabled) { object.pa_redirect_reply_enabled }
   add_to_serializer(:basic_category, :pa_redirect_reply_message) { object.pa_redirect_reply_message }
+  add_to_serializer(:basic_category, :pa_redirect_bump_reply_hours) { object.pa_redirect_bump_reply_hours }
+  add_to_serializer(:basic_category, :pa_redirect_bump_reply_message) { object.pa_redirect_bump_reply_message }
 
   add_to_serializer(:post, :pa_target_topic_id) { object.custom_fields["pa_target_topic_id"] }
   add_to_serializer(:post, :include_pa_target_topic_id?) { object.custom_fields["pa_target_topic_id"] != nil }
