@@ -174,6 +174,27 @@ after_initialize do
     end
   end
 
+  def format_hours(hours)
+    unit = "hour"
+    amount = hours
+    if hours >= 24*365
+      amount /= 24*365
+      unit = "year"
+    elsif hours >= 24*31
+      amount /= 24*31
+      unit = "month"
+    elsif hours >= 24*7
+      amount /= 24*7
+      unit = "week"
+    elsif hours >= 24
+      amount /= 24
+      unit = "day"
+    end
+    amount = amount.floor
+
+    return "#{amount} #{unit}#{amount == 1 ? "" : "s"}"
+  end
+
   def redirect_reply(reply)
     # Find post approval team group
     group = Group.lookup_group(SiteSetting.post_approval_redirect_reply_group)
