@@ -16,11 +16,12 @@ plugins:
   post_approval_redirect_reply_group:
     default: "Post_Approval"
   post_approval_redirect_topic_prefix:
-    default: "%s > "
+    default: "%s >"
     client: true
   post_approval_redirect_reply_prefix:
-    default: "Reply to Topic > "
+    default: "Reply to Topic >"
     client: true
+
   post_approval_redirect_reply_notice:
     default: "**This reply is awaiting review, please go [here](%URL%) for details.**"
 

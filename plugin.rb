@@ -125,10 +125,16 @@ after_initialize do
     request_category = topic.category
     TopicConverter.new(topic, Discourse.system_user).convert_to_private_message
 
+    # Respect message title bounds
+    title = "#{SiteSetting.post_approval_redirect_topic_prefix % [request_category.name]} #{topic.title}"
+    if title.length > SiteSetting.max_topic_title_length
+      title = title[0, SiteSetting.max_topic_title_length - 3] << "..."
+    end
+
     # Turn first post into wiki and include category in title
     topic.first_post.revise(
       Discourse.system_user,
-      title: (SiteSetting.post_approval_redirect_topic_prefix % [request_category.name]) + topic.title,
+      title: title,
       wiki: true,
       bypass_rate_limiter: true,
       skip_validations: true
@@ -176,7 +182,7 @@ after_initialize do
     request_category = target_topic.category
 
     # Respect message title bounds
-    title = (SiteSetting.post_approval_redirect_reply_prefix % [request_category.name]) + target_topic.title
+    title = "#{SiteSetting.post_approval_redirect_reply_prefix % [request_category.name]} #{target_topic.title}"
     if title.length > SiteSetting.max_topic_title_length
       title = title[0, SiteSetting.max_topic_title_length - 3] << "..."
     end
