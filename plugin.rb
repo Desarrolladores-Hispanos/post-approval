@@ -82,8 +82,8 @@ after_initialize do
   module PostApprovalHelper
     def self.is_group_name?(group_name)
       SiteSetting.post_approval_enabled &&
-        (group_name == SiteSetting.post_approval_redirect_topic_group ||
-         group_name == SiteSetting.post_approval_redirect_reply_group)
+        (group_name.downcase == SiteSetting.post_approval_redirect_topic_group.downcase ||
+         group_name.downcase == SiteSetting.post_approval_redirect_reply_group.downcase)
     end
 
     def self.is_redirect_topics_enabled
