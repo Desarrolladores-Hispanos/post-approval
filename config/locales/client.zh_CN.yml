@@ -5,41 +5,41 @@ zh_CN:
     post_approval:
       button:
         title: "审批帖子"
-        help: "请完成该帖审批流程"
+        help: "完成此帖的审批流程"
       settings:
         title: "帖子审批"
         redirect:
           topic:
-            enabled: "转发低信用等级会员的新话题至荣誉管理员？"
-            message: "转发新话题时的信息"
+            enabled: "将低信任等级的新主题重定向至荣誉管理员？"
+            message: "在重定向主题时要发送的信息"
           reply:
-            enabled: "转发低信用等级会员的回复至荣誉管理员？"
-            message: "转发回复时的信息"
+            enabled: "将低信任等级的新回复重定向至荣誉管理员？"
+            message: "在重定向回复时要发送的信息"
           bump:
-            hours: "转发顶帖的回复在以下小时完成(0 = disabled)"
-            message: "转发顶帖时的信息"
+            hours: "重定向顶帖这么长小时的主题的回复（0 = 禁用）"
+            message: "在重定向顶帖时要发送的信息"
       user:
         label: "帖子审批"
         redirect:
-          title: "完成请求后，转发至："
+          title: "在请求完成时，重定向至："
           options:
-            default: "(默认)"
-            approved_post: "已审批的话题/回复"
-            pa_message: "帖子正在审批的信息"
+            default: "（默认）"
+            approved_post: "核准的主题/回复"
+            pa_message: "请求信息"
             inbox: "审批帖子收件箱"
-        sort_inversed: "审批帖子收件箱按旧到新排列"
+        sort_inversed: "按从旧到新排列审批帖子收件箱"
       modal:
         badge:
-          title: "授予该帖子审批通过的徽章"
+          title: "为此帖授予帖子核准徽章"
         title: "帖子审批"
         topic:
-          error: "创建新话题时出现错误."
-          instructions: "你将要发起创建一个新话题的请求."
-          title: "新话题审核"
-          topic_name: "新话题主题"
-          radio_label: "作为新话题"
+          error: "在创建新主题时出错。"
+          instructions: "您即将创建新主题来完成此请求。"
+          title: "核准为新主题"
+          topic_name: "新主题标题"
+          radio_label: "作为新主题"
         reply:
-          error: "创建回复时发生错误."
-          instructions: "请选择你想要回复的话题."
-          title: "审批话题回复"
-          radio_label: "话题回复"
+          error: "在创建新回复时出错。"
+          instructions: "请选择要将此请求添加为回复的主题。"
+          title: "核准为主题的回复"
+          radio_label: "作为主题的回复"
