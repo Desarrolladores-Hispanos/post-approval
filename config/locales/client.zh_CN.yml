@@ -1,0 +1,45 @@
+# encoding: utf-8
+
+zh_CN:
+  js:
+    post_approval:
+      button:
+        title: "审批帖子"
+        help: "请完成该帖审批流程"
+      settings:
+        title: "帖子审批"
+        redirect:
+          topic:
+            enabled: "转发低信用等级会员的新话题至荣誉管理员？"
+            message: "转发新话题时的信息"
+          reply:
+            enabled: "转发低信用等级会员的回复至荣誉管理员？"
+            message: "转发回复时的信息"
+          bump:
+            hours: "转发顶帖的回复在以下小时完成(0 = disabled)"
+            message: "转发顶帖时的信息"
+      user:
+        label: "帖子审批"
+        redirect:
+          title: "完成请求后，转发至："
+          options:
+            default: "(默认)"
+            approved_post: "已审批的话题/回复"
+            pa_message: "帖子正在审批的信息"
+            inbox: "审批帖子收件箱"
+        sort_inversed: "审批帖子收件箱按旧到新排列"
+      modal:
+        badge:
+          title: "授予该帖子审批通过的徽章"
+        title: "帖子审批"
+        topic:
+          error: "创建新话题时出现错误."
+          instructions: "你将要发起创建一个新话题的请求."
+          title: "新话题审核"
+          topic_name: "新话题主题"
+          radio_label: "作为新话题"
+        reply:
+          error: "创建回复时发生错误."
+          instructions: "请选择你想要回复的话题."
+          title: "审批话题回复"
+          radio_label: "话题回复"
