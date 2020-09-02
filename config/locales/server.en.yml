@@ -17,6 +17,7 @@ en:
 
     post_approval_button_enabled: "Enable button to finish Post Approval requests"
     post_approval_button_group: "Group that can use button to finish Post Approval requests"
+    post_approval_lock_topics_default: "Set topic lock option on by default in approve dialog for new topics"
     
     post_approval_response_topic: "Message for topics approved through Post Approval"
     post_approval_response_reply: "Message for replies approved through Post Approval"

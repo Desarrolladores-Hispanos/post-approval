@@ -1,5 +1,5 @@
 # name: post-approval
-# version: 0.5.2
+# version: 0.5.3
 # authors: buildthomas, boyned/Kampfkarren
 
 enabled_site_setting :post_approval_enabled
@@ -440,7 +440,7 @@ after_initialize do
       raise Discourse::InvalidAccess.new unless Group.find_by(name: SiteSetting.post_approval_button_group).users.include?(current_user)
 
       # Validate post approval PM
-      pm_topic = Topic.find_by(id: params[:pm_topic_id], archetype: Archetype.private_message)
+      pm_topic = Topic.find_by(id: params[:pm_topic_id])
       raise Discourse::InvalidParameters.new(:pm_topic_id) unless (pm_topic && Guardian.new(current_user).can_see_topic?(pm_topic))
 
       # Validate whether badge should be awarded
@@ -462,6 +462,10 @@ after_initialize do
         title = params[:title]
         raise Discourse::InvalidParameters.new(:title) unless (title.instance_of?(String) &&
           title.length >= SiteSetting.min_topic_title_length && title.length <= SiteSetting.max_topic_title_length)
+
+        # Validate locked property for new topic
+        lock_topic = to_bool(params[:lock_topic])
+        raise Discourse::InvalidParameters.new(:lock_topic) if (lock_topic == nil)
 
         # Validate tags for the new topic
         tags = params[:tags]
@@ -487,6 +491,8 @@ after_initialize do
           skip_validations: true, # They've already gone through the validations to make the topic first
           skip_guardian: true,
         )
+
+        post.topic.update("closed" => true) if lock_topic
 
       elsif (!params[:target_topic_id].blank?)
 
@@ -569,7 +575,9 @@ after_initialize do
       end
 
       # Archive the private message
-      archive_message(pm_topic)
+      if pm_topic.archetype == Archetype.private_message
+        archive_message(pm_topic)
+      end
 
       pm_topic.reload
       pm_topic.save
