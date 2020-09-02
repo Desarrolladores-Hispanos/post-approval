@@ -34,6 +34,9 @@ plugins:
   post_approval_button_group:
     default: "Post_Approval"
     client: true
+  post_approval_lock_topics_default:
+    default: false
+    client: true
 
   post_approval_response_topic:
     default: "Thanks for your contribution! Your topic has been **approved** for **%CATEGORY%** here:\n%POST%"

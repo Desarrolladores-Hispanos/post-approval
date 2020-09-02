@@ -31,6 +31,8 @@ en:
       modal:
         badge:
           title: "Award Post Approval badge for this post"
+        locked:
+          title: "Lock topic after creation"
         title: "Post Approval"
         topic:
           error: "There was an error creating the new topic."

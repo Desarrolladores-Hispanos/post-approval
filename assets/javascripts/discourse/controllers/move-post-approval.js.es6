@@ -22,6 +22,7 @@ export default Controller.extend(ModalFunctionality, {
     newTopic: equal("selection", "new_topic"),
     existingTopic: equal("selection", "existing_topic"),
     awardBadge: false,
+    lockTopic: Discourse.SiteSettings.post_approval_lock_topics_default,
 
     init() {
         this._super(...arguments);
@@ -112,6 +113,7 @@ export default Controller.extend(ModalFunctionality, {
             categoryId: predictedCategoryId,
             predictedSelectedTopicId: predictedSelectedTopicId,
             awardBadge: false,
+            lockTopic: Discourse.SiteSettings.post_approval_lock_topics_default,
             searchQuery: "",
             tags: null
         });
@@ -145,7 +147,8 @@ export default Controller.extend(ModalFunctionality, {
                     title: this.topicName,
                     target_category_id: this.categoryId,
                     tags: this.tags,
-                    award_badge: this.awardBadge
+                    award_badge: this.awardBadge,
+                    lock_topic: this.lockTopic
                 };
             }
 

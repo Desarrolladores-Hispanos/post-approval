@@ -463,6 +463,10 @@ after_initialize do
         raise Discourse::InvalidParameters.new(:title) unless (title.instance_of?(String) &&
           title.length >= SiteSetting.min_topic_title_length && title.length <= SiteSetting.max_topic_title_length)
 
+        # Validate locked property for new topic
+        lock_topic = to_bool(params[:lock_topic])
+        raise Discourse::InvalidParameters.new(:lock_topic) if (lock_topic == nil)
+
         # Validate tags for the new topic
         tags = params[:tags]
         if tags.blank?
@@ -487,6 +491,8 @@ after_initialize do
           skip_validations: true, # They've already gone through the validations to make the topic first
           skip_guardian: true,
         )
+
+        post.topic.update("closed" => true) if lock_topic
 
       elsif (!params[:target_topic_id].blank?)
 

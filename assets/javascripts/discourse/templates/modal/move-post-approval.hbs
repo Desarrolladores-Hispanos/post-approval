@@ -34,6 +34,13 @@
                 {{tag-chooser tags=tags filterable=true categoryId=categoryId}}
             {{/if}}
         </form>
+
+        <div>
+            <label>
+                {{input type="checkbox" checked=lockTopic }}
+                {{i18n 'post_approval.modal.locked.title'}}
+            </label>
+        </div>
     {{/if}}
 
     <div>

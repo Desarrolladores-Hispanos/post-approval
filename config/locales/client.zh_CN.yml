@@ -31,6 +31,8 @@ zh_CN:
       modal:
         badge:
           title: "为此帖授予帖子核准徽章"
+        locked:
+          title: "Lock topic after creation"
         title: "帖子审批"
         topic:
           error: "在创建新主题时出错。"
