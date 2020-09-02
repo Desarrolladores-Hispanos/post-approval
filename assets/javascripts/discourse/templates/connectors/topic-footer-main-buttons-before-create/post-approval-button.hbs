@@ -1,12 +1,10 @@
 {{#if isPostApproval}}
-    {{#if topic.isPrivateMessage}}
-        {{d-button
-            id="topic-footer-button-post-approval"
-            class="btn-default topic-footer-button standard btn btn-icon-text ember-view"
-            action=(route-action "movePostApproval")
-            icon="check"
-            label="post_approval.button.title"
-            title="post_approval.button.help"
-        }}
-    {{/if}}
+    {{d-button
+        id="topic-footer-button-post-approval"
+        class="btn-default topic-footer-button standard btn btn-icon-text ember-view"
+        action=(route-action "movePostApproval")
+        icon="check"
+        label="post_approval.button.title"
+        title="post_approval.button.help"
+    }}
 {{/if}}
