@@ -1,5 +1,5 @@
 # name: post-approval
-# version: 0.5.2
+# version: 0.5.3
 # authors: buildthomas, boyned/Kampfkarren
 
 enabled_site_setting :post_approval_enabled
@@ -440,7 +440,7 @@ after_initialize do
       raise Discourse::InvalidAccess.new unless Group.find_by(name: SiteSetting.post_approval_button_group).users.include?(current_user)
 
       # Validate post approval PM
-      pm_topic = Topic.find_by(id: params[:pm_topic_id], archetype: Archetype.private_message)
+      pm_topic = Topic.find_by(id: params[:pm_topic_id])
       raise Discourse::InvalidParameters.new(:pm_topic_id) unless (pm_topic && Guardian.new(current_user).can_see_topic?(pm_topic))
 
       # Validate whether badge should be awarded
@@ -569,7 +569,9 @@ after_initialize do
       end
 
       # Archive the private message
-      archive_message(pm_topic)
+      if pm_topic.archetype == Archetype.private_message
+        archive_message(pm_topic)
+      end
 
       pm_topic.reload
       pm_topic.save
