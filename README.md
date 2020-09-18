@@ -139,3 +139,5 @@ To redirect **replies** on topics in a given category to post approval:
 - Check Settings > "Redirect replies by low trust levels to post approval?"
 - Fill out a system response in Settings > "Message to send along when redirecting replies"
 - Go to the Security tab and make sure that the trust level you are redirecting (i.e. trust level 1) has Reply permissions to the category.
+
+#### Copyright 2020 Roblox Corporation
