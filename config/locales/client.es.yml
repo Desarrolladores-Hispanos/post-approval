@@ -1,0 +1,47 @@
+# encoding: utf-8
+
+es:
+  js:
+    post_approval:
+      button:
+        title: "Aprobar publicación"
+        help: "Completar el procedimiento de aprobación de publicación para esta publicación"
+      settings:
+        title: "Aprobación de publicaciones"
+        redirect:
+          topic:
+            enabled: "¿Redirigir nuevos temas de bajos niveles de confianza a aprobación de publicaciones?"
+            message: "Mensaje para mandar al redirigir nuevos temas"
+          reply:
+            enabled: "¿Redirigir respuestas de bajos niveles de confianza a aprobación de publicaciones?"
+            message: "Mensaje para mandar al redirigir respuestas"
+          bump:
+            hours: "Redirigir respuestas que reviven los temas por esta cantidad de horas (0 = deshabilitado)"
+            message: "Mensaje para mandar al redirigir publicaciones que reviven"
+      user:
+        label: "Aprobación de publicaciones"
+        redirect:
+          title: "Al completar la solicitud, redirige a:"
+          options:
+            default: "(predeterminado)"
+            approved_post: "Tema/respuesta aprobado"
+            pa_message: "Mantener en mensaje de solicitud"
+            inbox: "Bandeja de entrada de aprobación de publicaciones"
+        sort_inversed: "Ordenar bandeja de entrada de aprobación de publicaciones de antiguo a nuevo"
+      modal:
+        badge:
+          title: "Conceder medalla de aprobación de publicaciones para esta publicación"
+        locked:
+          title: "Cerrar tema después de creación"
+        title: "Aprobación de publicaciones"
+        topic:
+          error: "Hubo un error al crear el nuevo tema."
+          instructions: "Estás a punto de completar esta solicitud creándolo como nuevo tema."
+          title: "Aprobar como nuevo tema"
+          topic_name: "Título de nuevo tema"
+          radio_label: "Como nuevo tema"
+        reply:
+          error: "Hubo un error creando la respuesta."
+          instructions: "Por favor escoja el tema al que le gustaría trasladar esta solicitud como una respuesta."
+          title: "Aprobar como respuesta al tema"
+          radio_label: "Como respuesta al tema"
