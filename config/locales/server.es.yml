@@ -1,0 +1,26 @@
+en:
+  site_settings:
+    post_approval_enabled: "Habilitar el procedimiento de aprobación de publicaciones"
+
+    post_approval_badge: "Medalla para conceder como parte de la aprobación de publicaciones"
+
+    post_approval_redirect_enabled: "Habilitar redirección de aprobación de publicaciones"
+    post_approval_redirect_tl_max: "Máximo nivel de confianza que la redirección de aprobación de publicaciones aplica a"
+    post_approval_redirect_topic_group: "Grupo que mandar solicitudes de nuevos temas a"
+    post_approval_redirect_reply_group: "Grupo que mandar solicitudes de nuevas respuestas a"
+    post_approval_redirect_topic_prefix: "Prefijo de mensajes a la aprobación de publicaciones para temas"
+    post_approval_redirect_reply_prefix: "Prefijo de mensajes a la aprobación de publicaciones para respuestas"
+
+    post_approval_redirect_reply_notice: "Mensaje que vincula a los usuarios la solicitud al redirigir respuestas"
+
+    post_approval_redirect_only_first: "Solo redirigir la primera respuesta de cada usuario por la aprobación de publicaciones"
+
+    post_approval_button_enabled: "Habilitar botón para completar solicitudes de aprobación de publicaciones"
+    post_approval_button_group: "Grupo que puede usar el botón para completar solicitudes de aprobación de publicaciones"
+    post_approval_lock_topics_default: "Habilitar la opción de cerrar el tema por defecto en el diálogo de aprobación para nuevos temas"
+    
+    post_approval_response_topic: "Mensaje para temas aprobados por la aprobación de publicaciones"
+    post_approval_response_reply: "Mensaje para respuestas aprobadas por la aprobación de publicaciones"
+    post_approval_response_badge: "Mensaje para indicar que el usuario recibió la medalla de aprobación de publicaciones para esta solicitud"
+    post_approval_response_topic_footer: "Mensaje para notificar al usuario que pudieron publicar el tema sin aprobación de publicaciones"
+    post_approval_response_reply_footer: "Mensaje para notificar al usuario que pudieron publicar la respuesta sin aprobación de publicaciones"
